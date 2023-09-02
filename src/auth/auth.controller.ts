@@ -16,7 +16,7 @@ export class AuthController {
     @ApiBody({type: SignUpDto})
     @ApiResponse({status: 201, description: "Returns access token", type: AuthResponseDto})
     @UseFilters(MongooseExceptionFilter)
-    signUp(@Body() signUp: SignUpDto): Promise<{ token: string }> {
+    private signUp(@Body() signUp: SignUpDto): Promise<{ token: string }> {
         return this.authService.signUp(signUp)
     }
 
