@@ -11,7 +11,10 @@ export class User {
   email: string;
 
   @Prop()
-  password: string;
+  pin: string;
+
+  @Prop()
+  profileImage: string;
 
   @Prop({})
   accountType: AccountType
