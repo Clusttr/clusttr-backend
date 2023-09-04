@@ -4,6 +4,11 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AccountController } from './account/account.controller';
+import { AccountService } from './account/account.service';
+import { AccountModule } from './account/account.module';
+import { SolanaModule } from './solana/solana.module';
+import { Keypair } from '@solana/web3.js';
 
 @Module({
   imports: [
@@ -11,10 +16,12 @@ import { MongooseModule } from '@nestjs/mongoose';
       envFilePath: '.env',
       isGlobal: true,
     }),
+
     MongooseModule.forRoot(process.env.DB_URI),
-    AuthModule
+    AuthModule,
+    SolanaModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AccountController, AccountController],
+  providers: [AppService, AccountService],
 })
 export class AppModule {}
