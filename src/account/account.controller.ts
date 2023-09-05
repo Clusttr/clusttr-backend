@@ -1,8 +1,8 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { Keypair } from '@solana/web3.js';
-import { TransactionResponseDto } from './dto/TransactionResponse.dto';
-import { RegisterAccountDto } from './dto/registerAccount.dto';
+import { TransactionResponseDto } from './dto/transaction-response.dto';
+import { RegisterAccountDto } from './dto/register-account.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { generateAccount } from 'src/solana/utils/get-account';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
