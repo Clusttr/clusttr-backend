@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { WaitlistDto } from './dto/waitlist.dto';
 import { WaitlistService } from './waitlist.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('waitlist')
 @Controller('waitlist')
 export class WaitlistController {
   constructor(private readonly waitlistService: WaitlistService) {}

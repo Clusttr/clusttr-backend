@@ -7,6 +7,7 @@ import { IsEmail } from 'class-validator';
 export class Waitlist {
   @Prop({
     required: true,
+    unique: true,
     validate: {
       validator: (value: string) => true,
       message: (props) => `${props.value} is not a valid email address`,
