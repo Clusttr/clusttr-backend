@@ -10,6 +10,7 @@ import { AccountModule } from './account/account.module';
 import { SolanaModule } from './solana/solana.module';
 import { Keypair } from '@solana/web3.js';
 import { WaitlistModule } from './waitlist/waitlist.module';
+import { AssetModule } from './asset/asset.module';
 
 @Module({
   imports: [
@@ -19,9 +20,10 @@ import { WaitlistModule } from './waitlist/waitlist.module';
     }),
 
     MongooseModule.forRoot(process.env.DB_URI),
-    AuthModule,
     SolanaModule,
-    WaitlistModule
+    AuthModule,
+    WaitlistModule,
+    AssetModule
   ],
   controllers: [AppController, AccountController, AccountController],
   providers: [AppService, AccountService],
