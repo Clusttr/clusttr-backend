@@ -1,15 +1,18 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schemas/user.schemas';
+import { AccountType, User } from './schemas/user.schemas';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LogInDto } from './dto/login.dto';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { UserDto } from './dto/user.dto';
 
 interface AuthJWTPayload {
   email: string;
@@ -43,7 +46,7 @@ export class AuthService {
         ...payload,
         pin: hashedPin,
         profileImage: payload.profileImage,
-        accountType: 0,
+        type: 0,
       });
 
       const token = this.jwtService.sign({ id: user._id });
@@ -76,5 +79,20 @@ export class AuthService {
 
     const token = this.jwtService.sign({ id: user._id });
     return { token, isNewUser: false };
+  }
+
+  async updateUserRole(userId: string, accountType: AccountType): Promise<UserDto> {
+    const user = await this.userModel.findById(userId)
+    if (user.accountType !== AccountType.admin) {
+      throw new ForbiddenException("Admin level persion required")
+    }
+
+    try {
+      console.log({accountType})
+      const result = await this.userModel.findOneAndUpdate({_id: userId}, {accountType: accountType})
+      return {id: userId, name: result.name, type: result.accountType}
+    } catch (error) {
+      throw new BadRequestException(error.message)
+    }
   }
 }

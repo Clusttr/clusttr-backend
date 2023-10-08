@@ -20,7 +20,7 @@ export class User {
   accountType: AccountType
 }
 
-enum AccountType {
+export enum AccountType {
     user = 0,
     developer,
     admin

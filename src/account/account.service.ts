@@ -22,7 +22,7 @@ export class AccountService {
     const createTransactionIx = SystemProgram.createAccount({
       fromPubkey: this.payer.publicKey,
       newAccountPubkey: keyPair.publicKey,
-      lamports, 
+      lamports,
       space,
       programId: SystemProgram.programId,
     });

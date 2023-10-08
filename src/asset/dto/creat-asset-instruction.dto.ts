@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsUrl, Max, Min } from 'class-validator';
 
-export class AssetDto {
+export class CreateAssetInstructionDto {
   @IsNotEmpty()
   @Max(30, {message: "Name must not exceed 30 characters"})
   @Min(5, {message: "Name must be at least 5 characters"})
