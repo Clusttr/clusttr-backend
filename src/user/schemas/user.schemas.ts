@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { AccountType } from 'src/enums/ACCOUNT_TYPE';
 
 @Schema({
   timestamps: true,
@@ -16,14 +17,11 @@ export class User {
   @Prop()
   profileImage: string;
 
-  @Prop({})
-  accountType: AccountType
-}
+  @Prop()
+  accountType: AccountType;
 
-export enum AccountType {
-    user = 0,
-    developer,
-    admin
+  @Prop()
+  publicKey: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AccountType } from '../schemas/user.schemas';
+import { AccountType } from 'src/enums/ACCOUNT_TYPE';
 
 export class UserDto {
   @ApiProperty({
@@ -18,5 +18,5 @@ export class UserDto {
     description: 'role',
     example: 'user'
   })
-  readonly type: AccountType
+  readonly accountType: AccountType
 }

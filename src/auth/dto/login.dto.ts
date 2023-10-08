@@ -17,6 +17,12 @@ export class LogInDto {
 
   @IsNotEmpty()
   @IsString()
+  @MinLength(44)
+  @ApiProperty({ description: "user's pin", example: 'DpmMV7knnwZcBeLXv9dX3fCHA8jCw7SA7Lzq4dvj1NR3' })
+  readonly publicKey: string;
+
+  @IsNotEmpty()
+  @IsString()
   @MinLength(6)
   @ApiProperty({ description: "user's pin", example: '1234' })
   readonly pin: string;

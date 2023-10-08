@@ -5,12 +5,16 @@ import {
   printSupply,
   mintV1,
   TokenStandard,
+  fetchDigitalAssetByMetadata,
+  Creator
 } from '@metaplex-foundation/mpl-token-metadata';
 import { UMIFactory } from 'src/solana/utils/umi';
 import {
   generateSigner,
   percentAmount,
   publicKey,
+  PublicKey,
+  Option,
 } from '@metaplex-foundation/umi';
 import { MintInstructionDto, CreateAssetInstructionDto } from './dto';
 import base58 from 'bs58';
@@ -39,7 +43,7 @@ export class AssetService {
   }
 
   async mint(asset: MintInstructionDto): Promise<string> {
-    let umi = this.umiFactory.umi;
+    const umi = this.umiFactory.umi;
 
     const mint = publicKey(asset.assetAddress);
     const receiverAddres = publicKey(asset.receiverAddress);
@@ -56,5 +60,17 @@ export class AssetService {
     } catch (error) {
       throw new BadRequestException();
     }
+  }
+
+  async isACreator(mint: PublicKey) {
+    const creators: Option<Array<Creator>> = await this.fetchCreators(mint)
+    
+  }
+
+  async fetchCreators(mint: PublicKey) {
+    const umi = this.umiFactory.umi;
+    const asset = await fetchDigitalAssetByMetadata(umi, mint)
+    const creators = asset.metadata.creators
+    return creators
   }
 }

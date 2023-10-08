@@ -8,9 +8,12 @@ import { AccountController } from './account/account.controller';
 import { AccountService } from './account/account.service';
 import { AccountModule } from './account/account.module';
 import { SolanaModule } from './solana/solana.module';
-import { Keypair } from '@solana/web3.js';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { AssetModule } from './asset/asset.module';
+import { UserService } from './user/user.service';
+import { UserController } from './user/user.controller';
+import { UserModule } from './user/user.module';
+import { UserSchema } from './user/schemas/user.schemas';
 
 @Module({
   imports: [
@@ -23,9 +26,11 @@ import { AssetModule } from './asset/asset.module';
     SolanaModule,
     AuthModule,
     WaitlistModule,
-    AssetModule
+    AssetModule,
+    UserModule,
+    MongooseModule.forFeature([{name: 'User', schema: UserSchema}])
   ],
-  controllers: [AppController, AccountController, AccountController],
-  providers: [AppService, AccountService],
+  controllers: [AppController, AccountController, AccountController, UserController],
+  providers: [AppService, AccountService, UserService],
 })
 export class AppModule {}

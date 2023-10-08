@@ -1,18 +1,15 @@
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { AccountType, User } from './schemas/user.schemas';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LogInDto } from './dto/login.dto';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
-import { UserDto } from './dto/user.dto';
+import { User } from 'src/user/schemas/user.schemas';
 
 interface AuthJWTPayload {
   email: string;
@@ -47,6 +44,7 @@ export class AuthService {
         pin: hashedPin,
         profileImage: payload.profileImage,
         type: 0,
+        publicKey: signUp.publicKey
       });
 
       const token = this.jwtService.sign({ id: user._id });
@@ -57,7 +55,7 @@ export class AuthService {
   }
 
   async login(login: LogInDto): Promise<AuthResponseDTO> {
-    const { idToken, pin } = login;
+    const { idToken, publicKey, pin } = login;
 
     const payload: AuthJWTPayload = this.jwtService.decode(
       idToken,
@@ -66,7 +64,7 @@ export class AuthService {
     const user = await this.userModel.findOne({ email: payload.email });
     if (!user) {
       //Create User
-      const signUpDto: SignUpDto = {idToken: idToken, pin}
+      const signUpDto: SignUpDto = {idToken: idToken, publicKey, pin}
       const token = await this.signUp(signUpDto)
       return token
     }
@@ -79,20 +77,5 @@ export class AuthService {
 
     const token = this.jwtService.sign({ id: user._id });
     return { token, isNewUser: false };
-  }
-
-  async updateUserRole(userId: string, accountType: AccountType): Promise<UserDto> {
-    const user = await this.userModel.findById(userId)
-    if (user.accountType !== AccountType.admin) {
-      throw new ForbiddenException("Admin level persion required")
-    }
-
-    try {
-      console.log({accountType})
-      const result = await this.userModel.findOneAndUpdate({_id: userId}, {accountType: accountType})
-      return {id: userId, name: result.name, type: result.accountType}
-    } catch (error) {
-      throw new BadRequestException(error.message)
-    }
   }
 }
