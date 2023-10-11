@@ -16,9 +16,9 @@ export class AssetController {
   @ApiOperation({ summary: 'Asset token (Fugilble Asset)' })
   @ApiResponse({ status: 201, description: 'Transaction Id', type: String })
   async create(@Request() req, @Body() asset: CreateAssetInstructionDto): Promise<string> {
-    if (req.user.accountType !== AccountType.developer) {
-      throw new UnauthorizedException("Only Developers have access to this endpoint")
-    }
+    // if (req.user.accountType !== AccountType.developer) {
+    //   throw new UnauthorizedException("Only Developers have access to this endpoint")
+    // }
     return this.assetService.create(req.user, asset);
   }
 
@@ -27,9 +27,9 @@ export class AssetController {
   @ApiOperation({ summary: 'Mint Asset'})
   @ApiResponse({status: 200, description: "Transaction Id", type: String})
   async mint(@Request() req, @Body() instruction: MintInstructionDto): Promise<string> {
-    if (req.user.accountType !== AccountType.developer) {
-      throw new UnauthorizedException("Only Developers have access to this endpoint")
-    }
+    // if (req.user.accountType !== AccountType.developer) {
+    //   throw new UnauthorizedException("Only Developers have access to this endpoint")
+    // }
     return this.assetService.mint(req.user, instruction)
   }
 }
