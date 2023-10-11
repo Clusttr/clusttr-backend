@@ -11,13 +11,6 @@ export class MintInstructionDto {
 
     @IsNotEmpty()
     @ApiProperty({
-        description: "Developer public address",
-        example: "33"
-    })
-    readonly receiverAddress: string
-
-    @IsNotEmpty()
-    @ApiProperty({
         description: "Number of asset to mint",
         example: "33"
     })

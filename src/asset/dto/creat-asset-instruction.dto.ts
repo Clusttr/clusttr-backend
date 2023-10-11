@@ -29,9 +29,6 @@ export class CreateAssetInstructionDto {
   readonly uri: string;
 
   @IsNotEmpty()
-  readonly creator: string;
-
-  @IsNotEmpty()
   @Max(1000, {message: "Max supply can not exceed 1000"})
   readonly maxSupply: number;
 }

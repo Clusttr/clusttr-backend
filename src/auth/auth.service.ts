@@ -43,7 +43,7 @@ export class AuthService {
         ...payload,
         pin: hashedPin,
         profileImage: payload.profileImage,
-        type: 0,
+        accountType: 0,
         publicKey: signUp.publicKey
       });
 

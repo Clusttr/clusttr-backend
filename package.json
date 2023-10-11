@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@metaplex-foundation/js": "^0.19.5",
     "@metaplex-foundation/mpl-candy-machine": "^6.0.0",
     "@metaplex-foundation/umi-bundle-defaults": "^0.8.9",
     "@metaplex-foundation/umi-eddsa-web3js": "^0.8.9",
