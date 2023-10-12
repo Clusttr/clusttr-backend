@@ -20,6 +20,7 @@ export class UserService {
   async updateUserRole(update: UpdateAccountTypeDto): Promise<UserDto> {
     console.log(update)
     const user = await this.userModel.findById(update.userId);
+    console.log({fromUser: user.accountType})
     if (user.accountType !== AccountType.admin) {
       throw new ForbiddenException('Admin level persion required');
     }

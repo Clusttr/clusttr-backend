@@ -14,6 +14,8 @@ import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UserSchema } from './user/schemas/user.schemas';
+import { TokenSchema } from './token/schema/token.schemas';
+import { TokenModule } from './token/token.module';
 
 @Module({
   imports: [
@@ -28,7 +30,8 @@ import { UserSchema } from './user/schemas/user.schemas';
     WaitlistModule,
     AssetModule,
     UserModule,
-    MongooseModule.forFeature([{name: 'User', schema: UserSchema}])
+    MongooseModule.forFeature([{name: 'User', schema: UserSchema}]),
+    TokenModule,
   ],
   controllers: [AppController, AccountController, AccountController, UserController],
   providers: [AppService, AccountService, UserService],

@@ -2,9 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { MongooseExceptionFilter } from './exceptions/mongoose-exception.filter';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  //implement validator
+  app.useGlobalPipes(new ValidationPipe())
 
   //Swagger setup
   const config = new DocumentBuilder()
@@ -22,4 +26,3 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
-
