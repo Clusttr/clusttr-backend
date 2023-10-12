@@ -29,6 +29,7 @@ import { getCreators } from 'src/utils/creator';
 import { Keypair } from '@solana/web3.js';
 import { BuyAssetInstruction } from './dto/buy-asset-instruction.dto';
 import { generateAccount, generateHexAccount } from 'src/solana/utils/get-account';
+import { CreateAssetResDto } from './dto/create-asset-res.dto';
 const bs58 = require('bs58');
 
 @Injectable()
@@ -38,25 +39,32 @@ export class AssetService {
     private readonly payer: Keypair,
   ) {}
 
-  async create(user: User, asset: CreateAssetInstructionDto): Promise<string> {
+  async create(user: User, asset: CreateAssetInstructionDto): Promise<CreateAssetResDto> {
+    const {name, symbol, uri} = asset
     let umi = this.umiFactory.umi;
     const mint = generateSigner(umi);
-    const transaction = await createFungibleAsset(umi, {
-      mint,
-      ...asset,
-      isMutable: true,
-      sellerFeeBasisPoints: percentAmount(1.5),
-      creators: [
-        { address: umi.payer.publicKey, verified: true, share: 100 },
-        { address: publicKey(user.publicKey), verified: true, share: 0 },
-      ],
-      printSupply: printSupply('Limited', [asset.maxSupply]),
-    }).sendAndConfirm(umi);
-    console.log({ transaction: bs58.encode(transaction.signature) });
-    return;
+    try {
+      const transaction = await createFungibleAsset(umi, {
+        mint,
+        name,
+        symbol,
+        uri,
+        isMutable: true,
+        sellerFeeBasisPoints: percentAmount(1.5),
+        creators: [
+          { address: umi.payer.publicKey, verified: true, share: 100 },
+          { address: publicKey(user.publicKey), verified: false, share: 0 },
+        ],
+        printSupply: printSupply('Limited', [asset.maxSupply]),
+      }).sendAndConfirm(umi);
+      const txSig = bs58.encode(transaction.signature);
+      return {token: mint.publicKey.toString(), txSig}
+    } catch (error) {
+      throw new BadRequestException(error.message)
+    }
   }
 
-  async mint(user: User, asset: MintInstructionDto): Promise<string> {
+  async mint(user: User, asset: MintInstructionDto): Promise<CreateAssetResDto> {
     const umi = this.umiFactory.umi;
     const mint = publicKey(asset.assetAddress);
 
@@ -77,10 +85,10 @@ export class AssetService {
 
       //give admin mint authority
       this.giveAdminTransferAuthority(asset.privateKey, asset.assetAddress)
-      const txString = base58.encode(tx.signature);
-      return txString;
+      const txSig = base58.encode(tx.signature);
+      return {token: mint.toString(), txSig};
     } catch (error) {
-      throw new BadRequestException();
+      throw new BadRequestException(error.message);
     }
   }
 

@@ -4,6 +4,7 @@ import { AssetService } from './asset.service';
 import { CreateAssetInstructionDto, MintInstructionDto } from './dto';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
 import { AccountType } from 'src/enums/ACCOUNT_TYPE';
+import { CreateAssetResDto } from './dto/create-asset-res.dto';
 
 @ApiTags('Asset')
 @Controller('asset')
@@ -15,7 +16,7 @@ export class AssetController {
   @ApiBody({ type: CreateAssetInstructionDto })
   @ApiOperation({ summary: 'Asset token (Fugilble Asset)' })
   @ApiResponse({ status: 201, description: 'Transaction Id', type: String })
-  async create(@Request() req, @Body() asset: CreateAssetInstructionDto): Promise<string> {
+  async create(@Request() req, @Body() asset: CreateAssetInstructionDto): Promise<CreateAssetResDto> {
     // if (req.user.accountType !== AccountType.developer) {
     //   throw new UnauthorizedException("Only Developers have access to this endpoint")
     // }
@@ -26,7 +27,7 @@ export class AssetController {
   @ApiBody({type: MintInstructionDto })
   @ApiOperation({ summary: 'Mint Asset'})
   @ApiResponse({status: 200, description: "Transaction Id", type: String})
-  async mint(@Request() req, @Body() instruction: MintInstructionDto): Promise<string> {
+  async mint(@Request() req, @Body() instruction: MintInstructionDto): Promise<CreateAssetResDto> {
     // if (req.user.accountType !== AccountType.developer) {
     //   throw new UnauthorizedException("Only Developers have access to this endpoint")
     // }

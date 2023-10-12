@@ -20,8 +20,4 @@ export class BuyAssetInstruction {
     example: 3
   })
   readonly amount: number;
-
-//   @IsNotEmpty()
-//   @Max(1000, {message: "Max supply can not exceed 1000"})
-//   readonly maxSupply: number;
 }

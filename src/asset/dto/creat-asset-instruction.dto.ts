@@ -3,8 +3,8 @@ import { IsNotEmpty, IsUrl, Max, Min } from 'class-validator';
 
 export class CreateAssetInstructionDto {
   @IsNotEmpty()
-  @Max(30, {message: "Name must not exceed 30 characters"})
-  @Min(5, {message: "Name must be at least 5 characters"})
+  // @Max(30, {message: "Name must not exceed 30 characters"})
+  // @Min(5, {message: "Name must be at least 5 characters"})
   @ApiProperty({
     description: "Asset Name",
     example: "Lotus ex suite"
@@ -12,8 +12,8 @@ export class CreateAssetInstructionDto {
   readonly name: string;
 
   @IsNotEmpty()
-  @Max(4, {message: "Symbol must not exceed 4 characters"})
-  @Min(3, {message: "Symbol must be at least 3 characters"})
+  // @Max(5, {message: "Symbol must not exceed 4 characters"})
+  // @Min(3, {message: "Symbol must be at least 3 characters"})
   @ApiProperty({
     description: "Asset Symbol",
     example: "LEX"

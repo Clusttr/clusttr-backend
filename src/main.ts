@@ -9,6 +9,8 @@ async function bootstrap() {
 
   //implement validator
   app.useGlobalPipes(new ValidationPipe())
+  
+  app.enableCors()
 
   //Swagger setup
   const config = new DocumentBuilder()
