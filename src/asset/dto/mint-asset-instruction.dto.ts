@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsNotEmpty } from "class-validator"
+import { IsNotEmpty, IsString } from "class-validator"
 
 export class MintInstructionDto {
     @IsNotEmpty()
@@ -15,5 +15,12 @@ export class MintInstructionDto {
         example: "33"
     })
     readonly amount: number
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({
+        description: "private String",
+    })
+    readonly privateKey: string
 
 }

@@ -2,7 +2,6 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import {} from './dto/creat-asset-instruction.dto';
 import {
@@ -11,8 +10,8 @@ import {
   mintV1,
   TokenStandard,
   fetchDigitalAssetByMetadata,
-  Creator,
   transferV1,
+  delegateStandardV1,
 } from '@metaplex-foundation/mpl-token-metadata';
 import { UMIFactory } from 'src/solana/utils/umi';
 import {
@@ -20,8 +19,6 @@ import {
   percentAmount,
   publicKey,
   PublicKey,
-  Option,
-  Pda,
   createSignerFromKeypair
 } from '@metaplex-foundation/umi';
 import { Pda as P } from '@metaplex-foundation/js'
@@ -31,7 +28,7 @@ import { User } from 'src/user/schemas/user.schemas';
 import { getCreators } from 'src/utils/creator';
 import { Keypair } from '@solana/web3.js';
 import { BuyAssetInstruction } from './dto/buy-asset-instruction.dto';
-import { generateAccount } from 'src/solana/utils/get-account';
+import { generateAccount, generateHexAccount } from 'src/solana/utils/get-account';
 const bs58 = require('bs58');
 
 @Injectable()
@@ -61,13 +58,13 @@ export class AssetService {
 
   async mint(user: User, asset: MintInstructionDto): Promise<string> {
     const umi = this.umiFactory.umi;
-
     const mint = publicKey(asset.assetAddress);
-    if (!this.isACreator(mint, publicKey(user.publicKey))) {
-      throw new UnauthorizedException(
-        'Only the creator of this asset can mint it',
-      );
-    }
+
+    // if (!this.isACreator(mint, publicKey(user.publicKey))) {
+    //   throw new UnauthorizedException(
+    //     'Only the creator of this asset can mint it',
+    //   );
+    // }
 
     try {
       const tx = await mintV1(umi, {
@@ -77,11 +74,32 @@ export class AssetService {
         tokenOwner: publicKey(user.publicKey),
         tokenStandard: TokenStandard.FungibleAsset,
       }).sendAndConfirm(umi);
+
+      //give admin mint authority
+      this.giveAdminTransferAuthority(asset.privateKey, asset.assetAddress)
       const txString = base58.encode(tx.signature);
       return txString;
     } catch (error) {
       throw new BadRequestException();
     }
+  }
+
+  private async giveAdminTransferAuthority(privateKey: string, mintAddress: string) {
+    const umi = this.umiFactory.umi
+    const mint = publicKey(mintAddress)
+    const keypair = generateHexAccount(privateKey)
+    const signer = umi.eddsa.createKeypairFromSecretKey(keypair.secretKey)
+    const authority = createSignerFromKeypair(umi, signer)
+    const delegate = publicKey(this.payer.publicKey.toBase58())
+
+    const tx = await delegateStandardV1(umi, {
+      mint,
+      tokenOwner: authority.publicKey,
+      authority,
+      delegate,
+      tokenStandard: TokenStandard.FungibleAsset,
+      amount: 1000
+    }).sendAndConfirm(umi)
   }
 
   private async isACreator(mint: PublicKey, creatorPublicKey: PublicKey) {
