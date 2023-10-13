@@ -1,12 +1,12 @@
-import { Keypair } from "@solana/web3.js"
-const bs58 = require('bs58')
-
+import { Keypair } from '@solana/web3.js';
+const bs58 = require('bs58');
 
 export const generateAccount = (secretKey: string) => {
-    return Keypair.fromSecretKey(bs58.decode(secretKey))
-}
+    const data = isHexadecimal(secretKey) ? Uint8Array.from(Buffer.from(secretKey, 'hex')) : bs58.decode(secretKey)
+    return Keypair.fromSecretKey(data)
+};
 
-export const generateHexAccount = (secretKey: string) => {
-    const secretKeyBinary = Uint8Array.from(Buffer.from(secretKey, 'hex'))
-    return Keypair.fromSecretKey(secretKeyBinary)
+function isHexadecimal(input: string): boolean {
+  const hexRegex = /^[0-9A-Fa-f]+$/;
+  return hexRegex.test(input);
 }

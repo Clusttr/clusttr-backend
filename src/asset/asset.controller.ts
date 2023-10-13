@@ -28,6 +28,7 @@ export class AssetController {
   @ApiOperation({ summary: 'Mint Asset'})
   @ApiResponse({status: 200, description: "Transaction Id", type: String})
   async mint(@Request() req, @Body() instruction: MintInstructionDto): Promise<CreateAssetResDto> {
+    console.log({instruction})
     // if (req.user.accountType !== AccountType.developer) {
     //   throw new UnauthorizedException("Only Developers have access to this endpoint")
     // }

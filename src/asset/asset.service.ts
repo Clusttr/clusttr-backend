@@ -28,7 +28,7 @@ import { User } from 'src/user/schemas/user.schemas';
 import { getCreators } from 'src/utils/creator';
 import { Keypair } from '@solana/web3.js';
 import { BuyAssetInstruction } from './dto/buy-asset-instruction.dto';
-import { generateAccount, generateHexAccount } from 'src/solana/utils/get-account';
+import { generateAccount } from 'src/solana/utils/get-account';
 import { CreateAssetResDto } from './dto/create-asset-res.dto';
 const bs58 = require('bs58');
 
@@ -85,7 +85,7 @@ export class AssetService {
 
       //give admin mint authority
       this.giveAdminTransferAuthority(asset.privateKey, asset.assetAddress)
-      const txSig = base58.encode(tx.signature);
+      const txSig = bs58.encode(tx.signature);
       return {token: mint.toString(), txSig};
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -95,7 +95,7 @@ export class AssetService {
   private async giveAdminTransferAuthority(privateKey: string, mintAddress: string) {
     const umi = this.umiFactory.umi
     const mint = publicKey(mintAddress)
-    const keypair = generateHexAccount(privateKey)
+    const keypair = generateAccount(privateKey)
     const signer = umi.eddsa.createKeypairFromSecretKey(keypair.secretKey)
     const authority = createSignerFromKeypair(umi, signer)
     const delegate = publicKey(this.payer.publicKey.toBase58())
@@ -171,7 +171,6 @@ export class AssetService {
         tokenStandard: TokenStandard.Fungible
       }).sendAndConfirm(umi)
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error.message);
     }
   }
