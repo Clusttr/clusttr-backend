@@ -1,10 +1,11 @@
-import { Body, Controller, Post, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AssetService } from './asset.service';
 import { CreateAssetInstructionDto, MintInstructionDto } from './dto';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
 import { AccountType } from 'src/enums/ACCOUNT_TYPE';
 import { CreateAssetResDto } from './dto/create-asset-res.dto';
+import { AssetDto } from './dto/asset.dto';
 
 @ApiTags('Asset')
 @Controller('asset')
@@ -26,12 +27,19 @@ export class AssetController {
   @Post('mint')
   @ApiBody({type: MintInstructionDto })
   @ApiOperation({ summary: 'Mint Asset'})
-  @ApiResponse({status: 200, description: "Transaction Id", type: String})
+  @ApiResponse({status: 200, description: "Create Asset Response", type: CreateAssetResDto})
   async mint(@Request() req, @Body() instruction: MintInstructionDto): Promise<CreateAssetResDto> {
     console.log({instruction})
     // if (req.user.accountType !== AccountType.developer) {
     //   throw new UnauthorizedException("Only Developers have access to this endpoint")
     // }
     return this.assetService.mint(req.user, instruction)
+  }
+
+  @Get('creator/:id')
+  @ApiOperation({summary: "fetch creators asset"})
+  @ApiResponse({status: 200, description: "Assets", type: Array<AssetDto>})
+  async getCreatorsAsset(@Param('id') creator: string): Promise<AssetDto[]>  {
+    return this.assetService.fetchCreatorsAsset(creator)
   }
 }

@@ -19,28 +19,35 @@ import {
   percentAmount,
   publicKey,
   PublicKey,
-  createSignerFromKeypair
+  createSignerFromKeypair,
 } from '@metaplex-foundation/umi';
-import { Pda as P } from '@metaplex-foundation/js'
 import { MintInstructionDto, CreateAssetInstructionDto } from './dto';
-import base58 from 'bs58';
 import { User } from 'src/user/schemas/user.schemas';
 import { getCreators } from 'src/utils/creator';
 import { Keypair } from '@solana/web3.js';
 import { BuyAssetInstruction } from './dto/buy-asset-instruction.dto';
 import { generateAccount } from 'src/solana/utils/get-account';
 import { CreateAssetResDto } from './dto/create-asset-res.dto';
+import { makePostRequest } from 'src/service/api/make-post-request';
+import { AssetModel } from './models/Asset.model';
+import { AssetDto, createAssetDto } from './dto/asset.dto';
 const bs58 = require('bs58');
+import { HeliusService } from 'src/service/api/HeliusService';
 
 @Injectable()
 export class AssetService {
   constructor(
     private readonly umiFactory: UMIFactory,
     private readonly payer: Keypair,
+    private readonly apiService: HeliusService
   ) {}
 
-  async create(user: User, asset: CreateAssetInstructionDto): Promise<CreateAssetResDto> {
-    const {name, symbol, uri} = asset
+  //CREAT ASSET
+  async create(
+    user: User,
+    asset: CreateAssetInstructionDto,
+  ): Promise<CreateAssetResDto> {
+    const { name, symbol, uri } = asset;
     let umi = this.umiFactory.umi;
     const mint = generateSigner(umi);
     try {
@@ -58,13 +65,17 @@ export class AssetService {
         printSupply: printSupply('Limited', [asset.maxSupply]),
       }).sendAndConfirm(umi);
       const txSig = bs58.encode(transaction.signature);
-      return {token: mint.publicKey.toString(), txSig}
+      return { token: mint.publicKey.toString(), txSig };
     } catch (error) {
-      throw new BadRequestException(error.message)
+      throw new BadRequestException(error.message);
     }
   }
 
-  async mint(user: User, asset: MintInstructionDto): Promise<CreateAssetResDto> {
+  //MINT ASSET
+  async mint(
+    user: User,
+    asset: MintInstructionDto,
+  ): Promise<CreateAssetResDto> {
     const umi = this.umiFactory.umi;
     const mint = publicKey(asset.assetAddress);
 
@@ -84,21 +95,24 @@ export class AssetService {
       }).sendAndConfirm(umi);
 
       //give admin mint authority
-      this.giveAdminTransferAuthority(asset.privateKey, asset.assetAddress)
+      this.giveAdminTransferAuthority(asset.privateKey, asset.assetAddress);
       const txSig = bs58.encode(tx.signature);
-      return {token: mint.toString(), txSig};
+      return { token: mint.toString(), txSig };
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
 
-  private async giveAdminTransferAuthority(privateKey: string, mintAddress: string) {
-    const umi = this.umiFactory.umi
-    const mint = publicKey(mintAddress)
-    const keypair = generateAccount(privateKey)
-    const signer = umi.eddsa.createKeypairFromSecretKey(keypair.secretKey)
-    const authority = createSignerFromKeypair(umi, signer)
-    const delegate = publicKey(this.payer.publicKey.toBase58())
+  private async giveAdminTransferAuthority(
+    privateKey: string,
+    mintAddress: string,
+  ) {
+    const umi = this.umiFactory.umi;
+    const mint = publicKey(mintAddress);
+    const keypair = generateAccount(privateKey);
+    const signer = umi.eddsa.createKeypairFromSecretKey(keypair.secretKey);
+    const authority = createSignerFromKeypair(umi, signer);
+    const delegate = publicKey(this.payer.publicKey.toBase58());
 
     const tx = await delegateStandardV1(umi, {
       mint,
@@ -106,8 +120,8 @@ export class AssetService {
       authority,
       delegate,
       tokenStandard: TokenStandard.FungibleAsset,
-      amount: 1000
-    }).sendAndConfirm(umi)
+      amount: 1000,
+    }).sendAndConfirm(umi);
   }
 
   private async isACreator(mint: PublicKey, creatorPublicKey: PublicKey) {
@@ -127,7 +141,7 @@ export class AssetService {
     return creators;
   }
 
-  //buy asset
+  //BUY ASSET
   async buyAsset(instruction: BuyAssetInstruction) {
     //calculate royalty
     //transfer royalty to us
@@ -137,17 +151,21 @@ export class AssetService {
     //fetchAsset and check royalty
     try {
       const umi = this.umiFactory.umi;
-      const buyerAccount = generateAccount(instruction.buyerPrivateKey)
-      const keypair = umi.eddsa.createKeypairFromSecretKey(buyerAccount.secretKey)
+      const buyerAccount = generateAccount(instruction.buyerPrivateKey);
+      const keypair = umi.eddsa.createKeypairFromSecretKey(
+        buyerAccount.secretKey,
+      );
       const signer = createSignerFromKeypair(umi, keypair);
-      const buyerPublicKey = publicKey(buyerAccount.publicKey)
+      const buyerPublicKey = publicKey(buyerAccount.publicKey);
       const mint = publicKey(instruction.tokenAddress);
       const asset = await fetchDigitalAssetByMetadata(umi, mint);
       // const destinationAddress: Pda = P.find(x)
 
       //roalty
       const numbOfTokens = instruction.amount;
-      const costPerUnitToken = await this.getAssetPrice(instruction.tokenAddress);
+      const costPerUnitToken = await this.getAssetPrice(
+        instruction.tokenAddress,
+      );
       const costOfAllToken = numbOfTokens * costPerUnitToken;
 
       const royalty = (
@@ -168,8 +186,8 @@ export class AssetService {
         authority: signer,
         tokenOwner: buyerPublicKey,
         destinationOwner: signer.publicKey, //destinationAddress, //this.payer.publicKey,
-        tokenStandard: TokenStandard.Fungible
-      }).sendAndConfirm(umi)
+        tokenStandard: TokenStandard.Fungible,
+      }).sendAndConfirm(umi);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -187,5 +205,12 @@ export class AssetService {
 
   private async getAssetPrice(asset: string): Promise<number> {
     return 0;
+  }
+
+  //FETCH CREATORS ASSETS
+  async fetchCreatorsAsset(creator: string): Promise<AssetDto[]> {
+    const result = await this.apiService.fetchAssets(creator, 1, 100)
+    const assets: AssetDto[] = createAssetDto(result)
+    return assets;
   }
 }

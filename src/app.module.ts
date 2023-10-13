@@ -16,6 +16,8 @@ import { UserModule } from './user/user.module';
 import { UserSchema } from './user/schemas/user.schemas';
 import { TokenSchema } from './token/schema/token.schemas';
 import { TokenModule } from './token/token.module';
+import { HeliusService } from './service/api/HeliusService';
+import { ServiceModule } from './service/service.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { TokenModule } from './token/token.module';
 
     MongooseModule.forRoot(process.env.DB_URI),
     SolanaModule,
+    ServiceModule,
     AuthModule,
     WaitlistModule,
     AssetModule,
