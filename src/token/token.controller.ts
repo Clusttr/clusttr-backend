@@ -2,9 +2,10 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { TokenDto } from './dto/token.dto';
 import { TokenService } from './token.service';
 import { TokenUploadDto } from './dto/token-upload.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('token')
+@ApiTags('token')
 export class TokenController {
     constructor(private readonly tokenService: TokenService) {}
 
