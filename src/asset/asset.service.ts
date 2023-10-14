@@ -33,6 +33,7 @@ import { AssetModel } from './models/Asset.model';
 import { AssetDto, createAssetDto } from './dto/asset.dto';
 const bs58 = require('bs58');
 import { HeliusService } from 'src/service/api/HeliusService';
+import { BatchAssetModel } from './models/BatchAssetModel';
 
 @Injectable()
 export class AssetService {
@@ -210,7 +211,7 @@ export class AssetService {
   //FETCH CREATORS ASSETS
   async fetchCreatorsAsset(creator: string): Promise<AssetDto[]> {
     const result = await this.apiService.fetchAssets(creator, 1, 100)
-    const assets: AssetDto[] = createAssetDto(result)
+    const assets: AssetDto[] = createAssetDto(result.result.items)
     return assets;
   }
 }

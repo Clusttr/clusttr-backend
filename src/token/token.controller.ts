@@ -3,6 +3,7 @@ import { TokenDto } from './dto/token.dto';
 import { TokenService } from './token.service';
 import { TokenUploadDto } from './dto/token-upload.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AssetDto } from 'src/asset/dto/asset.dto';
 
 @Controller('token')
 @ApiTags('token')
@@ -14,6 +15,13 @@ export class TokenController {
     @ApiResponse({status: 200, description: "Return list of recent tokens", type: TokenDto})
     async getRecentTokens(): Promise<TokenDto[]> {
         return this.tokenService.getRecentToken()
+    }
+
+    @Get("recent/asset")
+    @ApiOperation({ summary: "Fetch all recent token togther with their metadata"})
+    @ApiResponse({status: 200, description: "List of detailed asset"})
+    async getTokenAsset(): Promise<AssetDto[]> {
+        return this.tokenService.getRecentTokenAsset()
     }
 
     @Post("recent")

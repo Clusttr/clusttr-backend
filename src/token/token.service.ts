@@ -4,11 +4,15 @@ import { RecentToken } from './schema/token.schemas';
 import { Model } from 'mongoose';
 import { TokenUploadDto } from './dto/token-upload.dto';
 import { TokenDto } from './dto/token.dto';
+import { HeliusService } from 'src/service/api/HeliusService';
+import { AssetDto, createAssetDto } from 'src/asset/dto/asset.dto';
+import { Item } from 'src/asset/models/Asset.model';
 
 @Injectable()
 export class TokenService {
   constructor(
     @InjectModel(RecentToken.name) private readonly token: Model<RecentToken>,
+    private readonly heliusService: HeliusService
   ) {}
 
   async addRecentToken(tokenUploadDto: TokenUploadDto): Promise<TokenDto> {
@@ -34,6 +38,13 @@ export class TokenService {
       token: item.token,
     }));
     return tokenDtos;
+  }
+
+  async getRecentTokenAsset(): Promise<AssetDto[]> {
+    const tokenEntities = await this.token.find({});
+    const tokensPubKey = tokenEntities.map(token => token.token)
+    const res = await this.heliusService.fetchAssetBatch(tokensPubKey)
+    return createAssetDto(res.result)
   }
 
   async deleteRecentToken(id: string): Promise<TokenDto> {

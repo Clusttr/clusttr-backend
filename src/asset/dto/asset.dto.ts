@@ -1,4 +1,4 @@
-import { AssetModel } from "../models/Asset.model"
+import { AssetModel, Item } from "../models/Asset.model"
 
 export class AssetDto {
     readonly id: string
@@ -23,8 +23,9 @@ class File {
     mime:     string;
 }
 
-export function createAssetDto(asset: AssetModel): AssetDto[] {
-    return asset.result.items.map((item) => ({
+export function createAssetDto(assets: Item[]): AssetDto[] {
+    // asset.result.items.map(
+    return assets.map((item) => ({
         id: item.id,
         uri: item.content.json_uri,
         attribute: item.content.metadata.attributes.map((att) => ({
