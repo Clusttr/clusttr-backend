@@ -19,8 +19,8 @@ class AttributesDto {
 }
 
 class File {
-    uri:      string;
-    mime:     string;
+    uri: string;
+    mime: string;
 }
 
 export function createAssetDto(assets: Item[]): AssetDto[] {

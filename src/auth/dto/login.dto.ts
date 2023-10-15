@@ -23,7 +23,7 @@ export class LogInDto {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(6)
+  // @MinLength(4)
   @ApiProperty({ description: "user's pin", example: '1234' })
   readonly pin: string;
 }

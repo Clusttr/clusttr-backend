@@ -60,6 +60,9 @@ export class AuthService {
     const payload: AuthJWTPayload = this.jwtService.decode(
       idToken,
     ) as AuthJWTPayload;
+
+    console.log({payload})
+    console.log({idToken: login.idToken})
     
     const user = await this.userModel.findOne({ email: payload.email });
     if (!user) {
