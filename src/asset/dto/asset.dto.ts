@@ -24,11 +24,10 @@ class File {
 }
 
 export function createAssetDto(assets: Item[]): AssetDto[] {
-    // asset.result.items.map(
     return assets.map((item) => ({
         id: item.id,
         uri: item.content.json_uri,
-        attribute: item.content.metadata.attributes.map((att) => ({
+        attribute: item.content.metadata.attributes === undefined ? [] : item.content.metadata.attributes.map((att) => ({
           value: att.value,
           traitType: att.trait_type,
         })),
