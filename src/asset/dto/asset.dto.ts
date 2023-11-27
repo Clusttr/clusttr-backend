@@ -37,6 +37,6 @@ export function createAssetDto(assets: Item[]): AssetDto[] {
         image: item.content.links.image,
         files: item.content.files,
         supply: item.supply ?? 0, // item.supply?.print_current_supply ?? 0,
-        maxSupply: 0 //item.supply?.print_max_supply ?? 0,
+        maxSupply: 0 //item.supply?.print_max_supply ?? 0, *
       }));
 }
