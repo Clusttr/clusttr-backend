@@ -21,7 +21,7 @@ export interface Item {
   // royalty:     Royalty;
   // creators:    Creator[];
   // ownership:   Ownership;
-  supply: Supply;
+  supply?: number; //Supply;
   mutable: boolean;
   burnt: boolean;
 }
