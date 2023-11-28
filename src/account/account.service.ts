@@ -12,6 +12,12 @@ import {
 export class AccountService {
   constructor(private payer: Keypair) {}
 
+  /**
+   * @deprecated This function has been replace with a
+   * program function that can be signed from client-side
+   * @param keyPair
+   * @returns 
+   */
   async registerAccount(keyPair: Keypair): Promise<string> {
     const space = 0;
     const connection = new Connection(clusterApiUrl("devnet"), "single")
