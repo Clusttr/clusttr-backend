@@ -10,7 +10,7 @@ async function bootstrap() {
   //implement validator
   app.useGlobalPipes(new ValidationPipe())
   
-  app.enableCors({origin: ['http://localhost:3000', '*']})
+  app.enableCors()
 
   //Swagger setup
   const config = new DocumentBuilder()
