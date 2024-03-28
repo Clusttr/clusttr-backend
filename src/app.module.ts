@@ -18,6 +18,8 @@ import { TokenSchema } from './token/schema/token.schemas';
 import { TokenModule } from './token/token.module';
 import { HeliusService } from './service/api/HeliusService';
 import { ServiceModule } from './service/service.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { DowntownModule } from './downtown/downtown.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { ServiceModule } from './service/service.module';
       isGlobal: true,
     }),
 
+    ScheduleModule.forRoot(),
     MongooseModule.forRoot(process.env.DB_URI),
     SolanaModule,
     ServiceModule,
@@ -35,6 +38,7 @@ import { ServiceModule } from './service/service.module';
     UserModule,
     MongooseModule.forFeature([{name: 'User', schema: UserSchema}]),
     TokenModule,
+    DowntownModule,
   ],
   controllers: [AppController, AccountController, AccountController, UserController],
   providers: [AppService, AccountService, UserService],
