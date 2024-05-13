@@ -22,6 +22,9 @@ export class User {
 
   @Prop()
   publicKey: string;
+
+  @Prop()
+  bookmarks: string[]
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

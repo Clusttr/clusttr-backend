@@ -7,6 +7,6 @@ export class DowntownService {
 
     @Cron(CronExpression.EVERY_5_SECONDS)
     handleCron() {
-        this.logger.debug('Called every 5 sec');
+        //this.logger.debug('Called every 5 sec');
     }
 }

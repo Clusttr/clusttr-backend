@@ -20,6 +20,9 @@ import { HeliusService } from './service/api/HeliusService';
 import { ServiceModule } from './service/service.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DowntownModule } from './downtown/downtown.module';
+import { BookmarkService } from './bookmark/bookmark.service';
+import { BookmarkController } from './bookmark/bookmark.controller';
+import { BookmarkModule } from './bookmark/bookmark.module';
 
 @Module({
   imports: [
@@ -39,8 +42,9 @@ import { DowntownModule } from './downtown/downtown.module';
     MongooseModule.forFeature([{name: 'User', schema: UserSchema}]),
     TokenModule,
     DowntownModule,
+    BookmarkModule,
   ],
-  controllers: [AppController, AccountController, AccountController, UserController],
-  providers: [AppService, AccountService, UserService],
+  controllers: [AppController, AccountController, AccountController, UserController, BookmarkController],
+  providers: [AppService, AccountService, UserService, BookmarkService],
 })
 export class AppModule {}
