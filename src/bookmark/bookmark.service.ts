@@ -22,7 +22,7 @@ export class BookmarkService {
                     bookmarks: assetId
                 }}
             )
-            assetId
+            return assetId
         } catch (error) {
             throw new BadRequestException(error.message)
         }
