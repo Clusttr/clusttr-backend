@@ -1,5 +1,5 @@
 import { AssetModel } from '../models/Asset.model';
-import { AssetsModel, Item } from '../models/Assets.model';
+import { Item } from '../models/Assets.model';
 
 export class AssetDto {
   readonly id: string;

@@ -29,12 +29,9 @@ import { Keypair } from '@solana/web3.js';
 import { BuyAssetInstruction } from './dto/buy-asset-instruction.dto';
 import { generateAccount } from 'src/solana/utils/get-account';
 import { CreateAssetResDto } from './dto/create-asset-res.dto';
-import { makePostRequest } from 'src/service/api/make-post-request';
-import { AssetsModel } from './models/Assets.model';
 import { AssetDto, createAssetDto, createAssetDtos } from './dto/asset.dto';
 const bs58 = require('bs58');
 import { HeliusService } from 'src/service/api/HeliusService';
-import { BatchAssetModel } from './models/BatchAssetModel';
 
 @Injectable()
 export class AssetService {

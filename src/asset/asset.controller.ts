@@ -5,14 +5,12 @@ import {
   Param,
   Post,
   Request,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AssetService } from './asset.service';
 import { CreateAssetInstructionDto, MintInstructionDto } from './dto';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
-import { AccountType } from 'src/enums/ACCOUNT_TYPE';
 import { CreateAssetResDto } from './dto/create-asset-res.dto';
 import { AssetDto } from './dto/asset.dto';
 
