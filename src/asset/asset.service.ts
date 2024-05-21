@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import {} from './dto/creat-asset-instruction.dto';
 import {
@@ -29,8 +30,8 @@ import { BuyAssetInstruction } from './dto/buy-asset-instruction.dto';
 import { generateAccount } from 'src/solana/utils/get-account';
 import { CreateAssetResDto } from './dto/create-asset-res.dto';
 import { makePostRequest } from 'src/service/api/make-post-request';
-import { AssetModel } from './models/Asset.model';
-import { AssetDto, createAssetDto } from './dto/asset.dto';
+import { AssetsModel } from './models/Assets.model';
+import { AssetDto, createAssetDto, createAssetDtos } from './dto/asset.dto';
 const bs58 = require('bs58');
 import { HeliusService } from 'src/service/api/HeliusService';
 import { BatchAssetModel } from './models/BatchAssetModel';
@@ -40,7 +41,7 @@ export class AssetService {
   constructor(
     private readonly umiFactory: UMIFactory,
     private readonly payer: Keypair,
-    private readonly apiService: HeliusService
+    private readonly apiService: HeliusService,
   ) {}
 
   //CREAT ASSET
@@ -208,10 +209,18 @@ export class AssetService {
     return 0;
   }
 
+  async fetchAsset(id: string): Promise<AssetDto> {
+    const result = await this.apiService.fetchAsset(id);
+    if (result.error) {
+      throw new NotFoundException(result.error.message);
+    }
+    return createAssetDto(result);
+  }
+
   //FETCH CREATORS ASSETS
   async fetchCreatorsAsset(creator: string): Promise<AssetDto[]> {
-    const result = await this.apiService.fetchAssets(creator, 1, 100)
-    const assets: AssetDto[] = createAssetDto(result.result.items)
+    const result = await this.apiService.fetchAssets(creator, 1, 100);
+    const assets: AssetDto[] = createAssetDtos(result.result.items);
     return assets;
   }
 }
