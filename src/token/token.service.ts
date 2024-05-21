@@ -5,14 +5,13 @@ import { Model } from 'mongoose';
 import { TokenUploadDto } from './dto/token-upload.dto';
 import { TokenDto } from './dto/token.dto';
 import { HeliusService } from 'src/service/api/HeliusService';
-import { AssetDto, createAssetDto } from 'src/asset/dto/asset.dto';
-import { Item } from 'src/asset/models/Asset.model';
+import { AssetDto, createAssetDtos } from 'src/asset/dto/asset.dto';
 
 @Injectable()
 export class TokenService {
   constructor(
     @InjectModel(RecentToken.name) private readonly token: Model<RecentToken>,
-    private readonly heliusService: HeliusService
+    private readonly heliusService: HeliusService,
   ) {}
 
   async addRecentToken(tokenUploadDto: TokenUploadDto): Promise<TokenDto> {
@@ -26,7 +25,7 @@ export class TokenService {
       };
       return tokenDto;
     } catch (error) {
-        throw new BadRequestException("Token already exist")
+      throw new BadRequestException('Token already exist');
     }
   }
 
@@ -42,9 +41,9 @@ export class TokenService {
 
   async getRecentTokenAsset(): Promise<AssetDto[]> {
     const tokenEntities = await this.token.find({});
-    const tokensPubKey = tokenEntities.map(token => token.token)
-    const res = await this.heliusService.fetchAssetBatch(tokensPubKey)
-    return createAssetDto(res.result)
+    const tokensPubKey = tokenEntities.map((token) => token.token);
+    const res = await this.heliusService.fetchAssetBatch(tokensPubKey);
+    return createAssetDtos(res.result);
   }
 
   async deleteRecentToken(id: string): Promise<TokenDto> {

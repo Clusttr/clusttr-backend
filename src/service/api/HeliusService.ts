@@ -1,6 +1,7 @@
-import { AssetModel } from 'src/asset/models/Asset.model';
+import { AssetsModel } from 'src/asset/models/Assets.model';
 import { makePostRequest } from './make-post-request';
 import { BatchAssetModel } from 'src/asset/models/BatchAssetModel';
+import { AssetModel } from 'src/asset/models/Asset.model';
 
 export class HeliusService {
   constructor(private readonly apiKey: string) {}
@@ -9,7 +10,7 @@ export class HeliusService {
     creator: string,
     page: number,
     limit: number,
-  ): Promise<AssetModel> {
+  ): Promise<AssetsModel> {
     const requestBody = {
       jsonrpc: '2.0',
       id: '',
@@ -19,6 +20,23 @@ export class HeliusService {
         onlyVerified: false,
         page,
         limit,
+      },
+    };
+
+    const assetModel = await makePostRequest<AssetsModel>(
+      this.apiKey,
+      requestBody,
+    );
+    return assetModel;
+  }
+
+  async fetchAsset(id: string): Promise<AssetModel> {
+    const requestBody = {
+      jsonrpc: '2.0',
+      id: '',
+      method: 'getAsset',
+      params: {
+        id,
       },
     };
 
@@ -39,10 +57,10 @@ export class HeliusService {
       },
     };
 
-    const assetModel = await makePostRequest<BatchAssetModel>(
+    const assetModels = await makePostRequest<BatchAssetModel>(
       this.apiKey,
       requestBody,
     );
-    return assetModel;
+    return assetModels;
   }
 }

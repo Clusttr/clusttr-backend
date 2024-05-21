@@ -1,7 +1,7 @@
-import { Item } from "./Asset.model";
+import { Item } from './Assets.model';
 
 export interface BatchAssetModel {
-    jsonrpc: string;
-    result: Item[];
-    id: string;
-  }
+  jsonrpc: string;
+  result: Item[];
+  id: string;
+}
