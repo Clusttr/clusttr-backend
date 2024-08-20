@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -21,6 +21,9 @@ import { DowntownModule } from './downtown/downtown.module';
 import { BookmarkService } from './bookmark/bookmark.service';
 import { BookmarkController } from './bookmark/bookmark.controller';
 import { BookmarkModule } from './bookmark/bookmark.module';
+import { MintModule } from './mint/mint.module';
+import { MintController } from './mint/mint.controller';
+import { MintService } from './mint/mint.service';
 
 @Module({
   imports: [
@@ -37,12 +40,26 @@ import { BookmarkModule } from './bookmark/bookmark.module';
     WaitlistModule,
     AssetModule,
     UserModule,
-    MongooseModule.forFeature([{name: 'User', schema: UserSchema}]),
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     TokenModule,
     DowntownModule,
     BookmarkModule,
+    MintModule,
   ],
-  controllers: [AppController, AccountController, AccountController, UserController, BookmarkController],
-  providers: [AppService, AccountService, UserService, BookmarkService],
+  controllers: [
+    AppController,
+    AccountController,
+    AccountController,
+    UserController,
+    BookmarkController,
+    MintController,
+  ],
+  providers: [
+    AppService,
+    AccountService,
+    UserService,
+    BookmarkService,
+    MintService,
+  ],
 })
 export class AppModule {}
