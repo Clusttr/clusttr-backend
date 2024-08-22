@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { MintModule } from './mint.module';
+import { AssetDto } from './dto/asset.dto';
 
 @Injectable()
 export class MintService {
   constructor() {} //(@InjectModel(MintService.name) private mintModel: MintModule) {}
 
-  async uploadAsset(): Promise<string> {
+  async uploadAsset(asset: AssetDto): Promise<string> {
+    console.log({ asset });
     return 'uploading';
   }
 
@@ -14,11 +14,7 @@ export class MintService {
     return 'add more info';
   }
 
-  async createAsset(): Promise<string> {
+  async createAndMintAsset(): Promise<string> {
     return 'create asset';
-  }
-
-  async mintAsset(): Promise<string> {
-    return 'mint_asset';
   }
 }
