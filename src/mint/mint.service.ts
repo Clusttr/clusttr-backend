@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { AssetDto } from './dto/asset.dto';
+import { UploadAssetDto } from './dto/upload_asset.dto';
 
 @Injectable()
 export class MintService {
   constructor() {} //(@InjectModel(MintService.name) private mintModel: MintModule) {}
 
-  async uploadAsset(asset: AssetDto): Promise<string> {
+  async uploadAsset(asset: UploadAssetDto): Promise<string> {
     console.log({ asset });
     return 'uploading';
   }

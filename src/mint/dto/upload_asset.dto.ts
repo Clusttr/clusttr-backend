@@ -16,7 +16,7 @@ enum PropertyType {
   maisonette,
 }
 
-export class AssetDto {
+export class UploadAssetDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
