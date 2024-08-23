@@ -4,34 +4,36 @@ import {
   Param,
   Post,
   Query,
-  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { MintService } from './mint.service';
 import { UploadAssetDto } from './dto/upload_asset.dto';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/service/media_manager/CloudinaryService';
 
 @ApiTags('mint')
 @Controller('mint')
 export class MintController {
-  constructor(private readonly mintService: MintService) {}
+  constructor(
+    private readonly mintService: MintService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Post('upload_asset')
   async uploadAsset(@Body() asset: UploadAssetDto): Promise<string> {
     return this.mintService.uploadAsset(asset);
   }
 
-  @Post('upload_image')
+  @Post('upload_image/:id')
   @UseInterceptors(FilesInterceptor('files'))
   async upload_files(
+    @Param('id') assetId: string,
+    @Query('cover_img') coverImg: string,
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Query('cover_img') cover_img: string,
   ): Promise<string> {
-    console.log({ files });
-    console.log({ cover_img });
+    await this.cloudinaryService.uploadImages(files, assetId); //this.mintService.uploadImages(files, assetId, coverImg);
     return 'should work';
   }
 

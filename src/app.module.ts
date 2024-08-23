@@ -24,6 +24,7 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 import { MintModule } from './mint/mint.module';
 import { MintController } from './mint/mint.controller';
 import { MintService } from './mint/mint.service';
+import { CloudinaryService } from './service/media_manager/CloudinaryService';
 
 @Module({
   imports: [
@@ -60,6 +61,9 @@ import { MintService } from './mint/mint.service';
     UserService,
     BookmarkService,
     MintService,
+    CloudinaryService,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {}
+}
