@@ -13,6 +13,7 @@ import { MintService } from './mint.service';
 import { UploadAssetDto } from './dto/upload_asset.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/service/media_manager/CloudinaryService';
+import { UploadAssetQueryDto } from './dto/upload_asset_query.dto';
 
 @ApiTags('mint')
 @Controller('mint')
@@ -25,6 +26,13 @@ export class MintController {
   @Get('asset/:id')
   async getAsset(@Param('id') assetId: string): Promise<UploadAssetDto> {
     return this.mintService.getAsset(assetId);
+  }
+
+  @Get('asset')
+  async getAssets(
+    @Query() query: UploadAssetQueryDto,
+  ): Promise<UploadAssetDto[]> {
+    return this.mintService.searchAsset(query);
   }
 
   @Post('upload_asset')

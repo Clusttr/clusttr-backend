@@ -10,6 +10,7 @@ import { rejects } from 'assert';
 import { InjectModel } from '@nestjs/mongoose';
 import { UploadAsset } from './schema/upload_asset.schema';
 import { Model } from 'mongoose';
+import { UploadAssetQueryDto } from './dto/upload_asset_query.dto';
 
 @Injectable()
 export class MintService {
@@ -19,11 +20,20 @@ export class MintService {
 
   async getAsset(assetId: string): Promise<UploadAssetDto> {
     try {
-      const result = await this.uploadAssetModel.findById(assetId);
-      if (!result) {
+      const asset = await this.uploadAssetModel.findById(assetId);
+      if (!asset) {
         throw new NotFoundException();
       }
-      return createUploadAsset(result);
+      return createUploadAsset(asset);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async searchAsset(query: UploadAssetQueryDto): Promise<UploadAssetDto[]> {
+    try {
+      let assets = await this.uploadAssetModel.find({ ...query });
+      return assets;
     } catch (error) {
       throw error;
     }
