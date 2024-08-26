@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { createUploadAsset, UploadAssetDto } from './dto/upload_asset.dto';
 import * as fs from 'fs';
 import { resolve } from 'path';
@@ -12,6 +16,18 @@ export class MintService {
   constructor(
     @InjectModel(UploadAsset.name) private uploadAssetModel: Model<UploadAsset>,
   ) {}
+
+  async getAsset(assetId: string): Promise<UploadAssetDto> {
+    try {
+      const result = await this.uploadAssetModel.findById(assetId);
+      if (!result) {
+        throw new NotFoundException();
+      }
+      return createUploadAsset(result);
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async uploadAsset(asset: UploadAssetDto): Promise<UploadAssetDto> {
     try {

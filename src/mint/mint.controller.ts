@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Post,
   Query,
@@ -21,6 +22,11 @@ export class MintController {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
+  @Get('asset/:id')
+  async getAsset(@Param('id') assetId: string): Promise<UploadAssetDto> {
+    return this.mintService.getAsset(assetId);
+  }
+
   @Post('upload_asset')
   async uploadAsset(@Body() asset: UploadAssetDto): Promise<UploadAssetDto> {
     return this.mintService.uploadAsset(asset);
@@ -28,7 +34,7 @@ export class MintController {
 
   @Post('upload_image/:id')
   @UseInterceptors(FilesInterceptor('files'))
-  async upload_files(
+  async uploadImages(
     @Param('id') assetId: string,
     @Query('cover_img') coverImg: string,
     @UploadedFiles() files: Array<Express.Multer.File>,
