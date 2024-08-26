@@ -7,6 +7,9 @@ import {
   IsUrl,
   MaxLength,
 } from 'class-validator';
+import { Types } from 'mongoose';
+import { UpdateAccountTypeDto } from 'src/user/dto/updateAccountType.dto';
+import { UploadAsset } from '../schema/upload_asset.schema';
 
 enum PropertyType {
   apartment,
@@ -106,4 +109,23 @@ export class UploadAssetDto {
     example: ['https://domain.com/random_pubkey_on'],
   })
   extraImages: string[];
+}
+
+export function createUploadAsset(
+  asset: UploadAsset & { _id: Types.ObjectId },
+): UploadAssetDto {
+  return {
+    assetKey: asset.assetKey,
+    name: asset.name,
+    description: asset.description,
+    bedrooms: asset.bedrooms,
+    bathrooms: asset.bathrooms,
+    address: asset.address,
+    landArea: asset.landArea,
+    latlng: asset.latlng,
+    propertyType: asset.propertyType,
+    year: asset.year,
+    displayImage: asset.displayImage,
+    extraImages: asset.extraImages,
+  };
 }

@@ -22,7 +22,7 @@ export class MintController {
   ) {}
 
   @Post('upload_asset')
-  async uploadAsset(@Body() asset: UploadAssetDto): Promise<string> {
+  async uploadAsset(@Body() asset: UploadAssetDto): Promise<UploadAssetDto> {
     return this.mintService.uploadAsset(asset);
   }
 
@@ -33,7 +33,7 @@ export class MintController {
     @Query('cover_img') coverImg: string,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ): Promise<string> {
-    await this.cloudinaryService.uploadImages(files, assetId); //this.mintService.uploadImages(files, assetId, coverImg);
+    await this.cloudinaryService.uploadImages(files, assetId);
     return 'should work';
   }
 

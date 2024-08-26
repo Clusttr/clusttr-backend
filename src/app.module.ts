@@ -14,6 +14,7 @@ import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UserSchema } from './user/schemas/user.schemas';
+import { UploadAssetSchema } from './mint/schema/upload_asset.schema';
 import { TokenModule } from './token/token.module';
 import { ServiceModule } from './service/service.module';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -42,6 +43,9 @@ import { CloudinaryService } from './service/media_manager/CloudinaryService';
     AssetModule,
     UserModule,
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: 'UploadAsset', schema: UploadAssetSchema },
+    ]),
     TokenModule,
     DowntownModule,
     BookmarkModule,
