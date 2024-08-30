@@ -3,6 +3,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsUrl,
   MaxLength,
@@ -20,6 +21,15 @@ enum PropertyType {
 }
 
 export class UploadAssetDto {
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    name: 'string',
+    example: 'asset_id',
+    description: 'Id',
+  })
+  readonly id: string;
+
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
@@ -97,6 +107,7 @@ export class UploadAssetDto {
   year: number;
 
   @IsUrl()
+  @IsOptional()
   @ApiProperty({
     name: 'displayImage',
     example: 'https://domain.com/random_pubkey_on',
@@ -104,6 +115,7 @@ export class UploadAssetDto {
   displayImage: string;
 
   @IsArray()
+  @IsOptional()
   @ApiProperty({
     name: 'extra images',
     example: ['https://domain.com/random_pubkey_on'],
@@ -115,6 +127,7 @@ export function createUploadAsset(
   asset: UploadAsset & { _id: Types.ObjectId },
 ): UploadAssetDto {
   return {
+    id: asset._id.toString(),
     assetKey: asset.assetKey,
     name: asset.name,
     description: asset.description,

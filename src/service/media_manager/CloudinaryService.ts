@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 
 export class CloudinaryService {
   constructor(
@@ -14,7 +14,7 @@ export class CloudinaryService {
   }
 
   async uploadImage(image: Express.Multer.File, folder: string) {
-    let result = new Promise((resolve, reject) => {
+    let result: Promise<UploadApiResponse> = new Promise((resolve, reject) => {
       let value = cloudinary.uploader
         .upload_stream(
           {

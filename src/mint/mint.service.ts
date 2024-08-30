@@ -33,7 +33,7 @@ export class MintService {
   async searchAsset(query: UploadAssetQueryDto): Promise<UploadAssetDto[]> {
     try {
       let assets = await this.uploadAssetModel.find({ ...query });
-      return assets;
+      return assets.map((x) => createUploadAsset(x));
     } catch (error) {
       throw error;
     }
@@ -46,9 +46,28 @@ export class MintService {
         asset,
         { upsert: true },
       );
-      return createUploadAsset(result);
+
+      const updatedAsset = await this.uploadAssetModel.findById(result.id);
+      return createUploadAsset(updatedAsset);
     } catch (error) {
       throw new BadRequestException(error);
+    }
+  }
+
+  async updateAssetMediaURL(
+    id: string,
+    displayImage: string,
+    extraImages: string[],
+  ): Promise<UploadAssetDto> {
+    try {
+      const result = await this.uploadAssetModel.findByIdAndUpdate(id, {
+        displayImage,
+        extraImages,
+      });
+      const updateAsset = await this.uploadAssetModel.findById(result.id);
+      return createUploadAsset(updateAsset);
+    } catch (error) {
+      throw error;
     }
   }
 

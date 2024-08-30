@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -46,9 +47,20 @@ export class MintController {
     @Param('id') assetId: string,
     @Query('cover_img') coverImg: string,
     @UploadedFiles() files: Array<Express.Multer.File>,
-  ): Promise<string> {
-    await this.cloudinaryService.uploadImages(files, assetId);
-    return 'should work';
+  ): Promise<UploadAssetDto> {
+    let orderdFiles = this.moveItemToIndexZero(coverImg, files);
+
+    const uploadMedia = await this.cloudinaryService.uploadImages(
+      orderdFiles,
+      assetId,
+    );
+    const mediaURL = uploadMedia.map((x) => x.url);
+    const coverURL = mediaURL.shift();
+    return await this.mintService.updateAssetMediaURL(
+      assetId,
+      coverURL,
+      mediaURL,
+    );
   }
 
   @Post('update_asset')
@@ -56,8 +68,27 @@ export class MintController {
     return this.mintService.addMoreInfo();
   }
 
-  @Post('create_asset')
+  @Post('create')
   async createAsset(): Promise<string> {
     return this.mintService.createAndMintAsset();
+  }
+
+  private moveItemToIndexZero(
+    id: string,
+    list: Express.Multer.File[],
+  ): Express.Multer.File[] {
+    const index = list.findIndex((x) => x.originalname === id);
+
+    if (index == -1) {
+      throw new BadRequestException(`File with name "${id}" not found`);
+    }
+
+    if (index == 0) {
+      return list;
+    }
+
+    const [item] = list.splice(index, 1);
+    list.unshift(item);
+    return list;
   }
 }
