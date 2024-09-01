@@ -39,9 +39,43 @@ export class CloudinaryService {
     );
     return Promise.all(uploadPromise);
   }
+
+  async fetchImages(folder_name: string) {
+    const result: CloudinaryResult = await cloudinary.api.resources({
+      type: 'upload',
+      prefix: `upload_asset/${folder_name}`,
+      max_results: 20,
+    });
+    return result.resources;
+  }
 }
 
 // cloudinary.v2.api
 //   .delete_resources(['asset_mint/abc/file_i5tnoc', 'asset_mint/abc/fthwg5oboegzb49eyr2q'],
 //     { type: 'upload', resource_type: 'image' })
 //   .then(console.log);
+
+export interface CloudinaryResource {
+  public_id: string;
+  folder: string;
+  filename: string;
+  format: string;
+  version: number;
+  resource_type: string;
+  type: string;
+  created_at: string;
+  url: string;
+  secure_url: string;
+  bytes: number;
+  width: number;
+  height: number;
+  aspect_ratio: number;
+  tags: string[];
+  // Add more properties as needed based on the response
+}
+
+interface CloudinaryResult {
+  resources: CloudinaryResource[];
+  next_cursor?: string;
+  // Add more properties as needed based on the response
+}

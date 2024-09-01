@@ -1,11 +1,9 @@
 import * as bs58 from 'bs58';
 // import * as web3 from '@solana/web3.js';
-import { percentAmount } from '@metaplex-foundation/umi';
+import { percentAmount, createGenericFile } from '@metaplex-foundation/umi';
 import {
   Creator,
   createFungibleAsset,
-  //   createV1,
-  //   createFungibleAsset,
 } from '@metaplex-foundation/mpl-token-metadata';
 import { UploadAsset } from 'src/mint/schema/upload_asset.schema';
 import { UMIFactory } from 'src/solana/utils/umi';
@@ -15,6 +13,7 @@ import {
   publicKey,
   PublicKey,
 } from '@metaplex-foundation/umi';
+import { CloudinaryResource } from './media_manager/CloudinaryService';
 
 class MetaplexServices {
   private umi: Umi;
@@ -22,19 +21,47 @@ class MetaplexServices {
     this.umi = umiFactory.umi;
   }
 
-  uploadMetadata(asset: UploadAsset): string {
-    let metadata = createSemiFungibleMetadata(asset);
-    return '';
+  private async uploadFiles(files: CloudinaryResource[]): Promise<string[]> {
+    let gFiles = files.map((file) =>
+      createGenericFile(file.filename, file.filename, {
+        contentType: 'image/png',
+      }),
+    );
+    let result = await this.umi.uploader.upload(gFiles);
+    return result;
   }
 
-  getMint(secretKey: string) {
-    const secretKeyBits = bs58.decode(secretKey);
-    const keypair = this.umi.eddsa.createKeypairFromSecretKey(secretKeyBits);
-    const keypairSigner = createSignerFromKeypair(this.umi, keypair);
-    return keypairSigner;
+  private async uploadJson(asset: UploadAsset, files: CloudinaryResource[]) {
+    let filesOnIPSF = await this.uploadFiles(files);
+    let coverImage = filesOnIPSF.shift();
+
+    let attributes: Attribute[] = [
+      { trait_type: 'bedrooms', value: asset.bedrooms.toString() },
+      { trait_type: 'bathrooms', value: asset.bathrooms.toString() },
+    ];
+
+    let properties: Propety[] = asset.extraImages.map((mediaURI) => {
+      return {
+        file: {
+          uri: mediaURI,
+          type: 'image/png',
+          cdn: false,
+        },
+        category: 'image',
+      };
+    });
+
+    let metadata: SemiFungibleMetadeta = {
+      name: asset.name,
+      description: asset.description,
+      image: coverImage,
+      external_url: 'https://clusttr.io',
+      attributes,
+      properties,
+    };
   }
 
-  getCreators(dev: string): Creator[] {
+  private getCreators(dev: string): Creator[] {
     return [
       {
         address: this.umi.payer.publicKey,
@@ -49,9 +76,9 @@ class MetaplexServices {
     ];
   }
 
-  createToken(asset: UploadAsset) {
-    let uri = this.uploadMetadata(asset);
-    let mint = this.getMint(asset.assetKey);
+  createToken(asset: UploadAsset, files: CloudinaryResource[]) {
+    let uri = this.uploadJson(asset, files);
+    let mint = createSignerFromString(asset.assetKey);
     let creators = this.getCreators(asset.developer);
 
     const tx = createFungibleAsset(this.umi, {
@@ -117,4 +144,11 @@ function createSemiFungibleMetadata(asset: UploadAsset): SemiFungibleMetadeta {
     attributes,
     properties,
   };
+}
+
+function createSignerFromString(secretKey: string) {
+  const secretKeyBits = bs58.decode(secretKey);
+  const keypair = this.umi.eddsa.createKeypairFromSecretKey(secretKeyBits);
+  const keypairSigner = createSignerFromKeypair(this.umi, keypair);
+  return keypairSigner;
 }
