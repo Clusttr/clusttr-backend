@@ -50,6 +50,18 @@ export class CloudinaryService {
   }
 }
 
+async function deleteFolder(
+  folder: string,
+  contentsId: string[],
+): Promise<void> {
+  try {
+    await cloudinary.api.delete_resources(contentsId);
+    await cloudinary.api.delete_folder(`upload_asset/${folder}`);
+  } catch (error) {
+    throw error;
+  }
+}
+
 // cloudinary.v2.api
 //   .delete_resources(['asset_mint/abc/file_i5tnoc', 'asset_mint/abc/fthwg5oboegzb49eyr2q'],
 //     { type: 'upload', resource_type: 'image' })
