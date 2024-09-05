@@ -1,4 +1,5 @@
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import { CloudinaryResult } from '../types/CloudinaryResource';
 
 export class CloudinaryService {
   constructor(
@@ -60,34 +61,4 @@ async function deleteFolder(
   } catch (error) {
     throw error;
   }
-}
-
-// cloudinary.v2.api
-//   .delete_resources(['asset_mint/abc/file_i5tnoc', 'asset_mint/abc/fthwg5oboegzb49eyr2q'],
-//     { type: 'upload', resource_type: 'image' })
-//   .then(console.log);
-
-export interface CloudinaryResource {
-  public_id: string;
-  folder: string;
-  filename: string;
-  format: string;
-  version: number;
-  resource_type: string;
-  type: string;
-  created_at: string;
-  url: string;
-  secure_url: string;
-  bytes: number;
-  width: number;
-  height: number;
-  aspect_ratio: number;
-  tags: string[];
-  // Add more properties as needed based on the response
-}
-
-interface CloudinaryResult {
-  resources: CloudinaryResource[];
-  next_cursor?: string;
-  // Add more properties as needed based on the response
 }

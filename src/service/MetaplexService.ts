@@ -1,5 +1,9 @@
 import * as bs58 from 'bs58';
-import { percentAmount, createGenericFile } from '@metaplex-foundation/umi';
+import {
+  percentAmount,
+  createGenericFile,
+  GenericFile,
+} from '@metaplex-foundation/umi';
 import {
   Creator,
   TokenStandard,
@@ -12,9 +16,12 @@ import {
   Umi,
   createSignerFromKeypair,
   publicKey,
-  PublicKey,
 } from '@metaplex-foundation/umi';
-import { CloudinaryResource } from './media_manager/CloudinaryService';
+import { createSemiFungibleMetadata } from './types/SemiFungibleMetadeta';
+import {
+  CloudinaryResource,
+  generateGenericFile,
+} from './types/CloudinaryResource';
 
 class MetaplexServices {
   private umi: Umi;
@@ -62,52 +69,25 @@ class MetaplexServices {
     asset: UploadAsset,
     cloudinaryFiles: CloudinaryResource[],
   ): Promise<string> {
-    let filesURL = await this.uploadFiles(cloudinaryFiles);
-    let jsonURL = await this.uploadJson(asset, cloudinaryFiles);
+    let files = await generateGenericFile(cloudinaryFiles);
+    let filesURL = await this.uploadFiles(files);
+    let coverImage = filesURL.shift();
+    let jsonURL = await this.uploadJson(asset, coverImage, filesURL);
     return jsonURL;
   }
 
-  private async uploadFiles(files: CloudinaryResource[]): Promise<string[]> {
-    let gFiles = files.map((file) =>
-      createGenericFile(file.filename, file.filename, {
-        contentType: 'image/png',
-      }),
-    );
-    let result = await this.umi.uploader.upload(gFiles);
+  private async uploadFiles(files: GenericFile[]): Promise<string[]> {
+    let result = await this.umi.uploader.upload(files);
     return result;
   }
 
-  private async uploadJson(asset: UploadAsset, files: CloudinaryResource[]) {
-    let filesOnIPSF = await this.uploadFiles(files);
-    let coverImage = filesOnIPSF.shift();
-
-    let attributes: Attribute[] = [
-      { trait_type: 'bedrooms', value: asset.bedrooms.toString() },
-      { trait_type: 'bathrooms', value: asset.bathrooms.toString() },
-    ];
-
-    let properties: Propety[] = asset.extraImages.map((mediaURI) => {
-      return {
-        file: {
-          uri: mediaURI,
-          type: 'image/png',
-          cdn: false,
-        },
-        category: 'image',
-      };
-    });
-
-    let metadata: SemiFungibleMetadeta = {
-      name: asset.name,
-      description: asset.description,
-      image: coverImage,
-      external_url: 'https://clusttr.io',
-      attributes,
-      properties,
-    };
-
-    const result = await this.umi.uploader.uploadJson(metadata);
-    return result;
+  private async uploadJson(
+    asset: UploadAsset,
+    coverImage: string,
+    extraImages: string[],
+  ) {
+    let metadata = createSemiFungibleMetadata(asset, coverImage, extraImages);
+    return await this.umi.uploader.uploadJson(metadata);
   }
 
   private getCreators(dev: string): Creator[] {
@@ -124,58 +104,6 @@ class MetaplexServices {
       },
     ];
   }
-}
-
-type Attribute = {
-  trait_type: string;
-  value: string;
-};
-
-type Propety = {
-  file: {
-    uri: string;
-    type: string;
-    cdn: boolean;
-  };
-  category: 'video' | 'image';
-};
-
-interface SemiFungibleMetadeta {
-  name: string;
-  description: string;
-  image: string;
-  animation_url?: string;
-  external_url: string;
-  attributes: Attribute[];
-  properties: Propety[];
-}
-
-function createSemiFungibleMetadata(asset: UploadAsset): SemiFungibleMetadeta {
-  let attributes: Attribute[] = [
-    { trait_type: 'bedrooms', value: asset.bedrooms.toString() },
-    { trait_type: 'bathrooms', value: asset.bathrooms.toString() },
-  ];
-
-  // fetch these media from cloudinary first before
-  let properties: Propety[] = asset.extraImages.map((mediaURI) => {
-    return {
-      file: {
-        uri: mediaURI,
-        type: 'image/png',
-        cdn: false,
-      },
-      category: 'image',
-    };
-  });
-
-  return {
-    name: asset.name,
-    description: asset.description,
-    image: asset.displayImage,
-    external_url: 'https://clusttr.io',
-    attributes,
-    properties,
-  };
 }
 
 function createSignerFromString(secretKey: string) {
