@@ -4,18 +4,20 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { createUploadAsset, UploadAssetDto } from './dto/upload_asset.dto';
-import * as fs from 'fs';
-import { resolve } from 'path';
-import { rejects } from 'assert';
 import { InjectModel } from '@nestjs/mongoose';
 import { UploadAsset } from './schema/upload_asset.schema';
 import { Model } from 'mongoose';
 import { UploadAssetQueryDto } from './dto/upload_asset_query.dto';
+import { CloudinaryService } from 'src/service/media_manager/CloudinaryService';
+import { MetaplexServices } from 'src/service/MetaplexService';
+import { CreateAssetResDto } from 'src/asset/dto/create-asset-res.dto';
 
 @Injectable()
 export class MintService {
   constructor(
     @InjectModel(UploadAsset.name) private uploadAssetModel: Model<UploadAsset>,
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly metaplexService: MetaplexServices,
   ) {}
 
   async getAsset(assetId: string): Promise<UploadAssetDto> {
@@ -75,7 +77,17 @@ export class MintService {
     return 'add more info';
   }
 
-  async createAndMintAsset(): Promise<string> {
-    return 'create asset';
+  async createAsset(assetId: string): Promise<CreateAssetResDto> {
+    //fetch asset
+    let asset = await this.uploadAssetModel.findById(assetId);
+    //fetch asset media to arweave
+    let files = await this.cloudinaryService.fetchImages(asset.assetKey);
+    let txSig = await this.metaplexService.createToken(asset, files);
+    //delete asset from cloudinary
+    let filesKey = files.map((x) => x.asset_id);
+    await this.cloudinaryService.deleteFolder(asset.assetKey, filesKey);
+    //delete asset from db
+    await this.uploadAssetModel.findByIdAndDelete(assetId);
+    return { token: asset.assetKey, txSig: txSig };
   }
 }

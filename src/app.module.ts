@@ -26,6 +26,7 @@ import { MintModule } from './mint/mint.module';
 import { MintController } from './mint/mint.controller';
 import { MintService } from './mint/mint.service';
 import { CloudinaryService } from './service/media_manager/CloudinaryService';
+import { MetaplexServices } from './service/MetaplexService';
 
 @Module({
   imports: [
@@ -37,7 +38,6 @@ import { CloudinaryService } from './service/media_manager/CloudinaryService';
     ScheduleModule.forRoot(),
     MongooseModule.forRoot(process.env.DB_URI),
     SolanaModule,
-    ServiceModule,
     AuthModule,
     WaitlistModule,
     AssetModule,
@@ -50,6 +50,7 @@ import { CloudinaryService } from './service/media_manager/CloudinaryService';
     DowntownModule,
     BookmarkModule,
     MintModule,
+    ServiceModule,
   ],
   controllers: [
     AppController,
@@ -65,7 +66,6 @@ import { CloudinaryService } from './service/media_manager/CloudinaryService';
     UserService,
     BookmarkService,
     MintService,
-    CloudinaryService,
   ],
 })
 export class AppModule {

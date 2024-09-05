@@ -1,9 +1,5 @@
 import * as bs58 from 'bs58';
-import {
-  percentAmount,
-  createGenericFile,
-  GenericFile,
-} from '@metaplex-foundation/umi';
+import { percentAmount, GenericFile } from '@metaplex-foundation/umi';
 import {
   Creator,
   TokenStandard,
@@ -12,38 +8,31 @@ import {
 } from '@metaplex-foundation/mpl-token-metadata';
 import { UploadAsset } from 'src/mint/schema/upload_asset.schema';
 import { UMIFactory } from 'src/solana/utils/umi';
-import {
-  Umi,
-  createSignerFromKeypair,
-  publicKey,
-} from '@metaplex-foundation/umi';
+import { createSignerFromKeypair, publicKey } from '@metaplex-foundation/umi';
 import { createSemiFungibleMetadata } from './types/SemiFungibleMetadeta';
 import {
   CloudinaryResource,
   generateGenericFile,
 } from './types/CloudinaryResource';
 
-class MetaplexServices {
-  private umi: Umi;
-  constructor(umiFactory: UMIFactory) {
-    this.umi = umiFactory.umi;
-  }
+export class MetaplexServices {
+  constructor(private readonly umiFactory: UMIFactory) {}
 
   async createToken(asset: UploadAsset, files: CloudinaryResource[]) {
     let uri = await this.upload(asset, files);
     let mint = createSignerFromString(asset.assetKey);
     let creators = this.getCreators(asset.developer);
 
-    const tx = await createFungibleAsset(this.umi, {
+    const tx = await createFungibleAsset(this.umiFactory.umi, {
       mint,
-      authority: this.umi.payer,
+      authority: this.umiFactory.umi.payer,
       name: asset.name,
       symbol: asset.name,
       uri,
       isMutable: true,
       sellerFeeBasisPoints: percentAmount(2),
       creators,
-    }).sendAndConfirm(this.umi);
+    }).sendAndConfirm(this.umiFactory.umi);
 
     return tx.signature.toString();
   }
@@ -55,13 +44,13 @@ class MetaplexServices {
   ): Promise<string> {
     let mintPubkey = publicKey(assetPubkey);
     let destinationPubkey = publicKey(destination);
-    const tx = await mintV1(this.umi, {
+    const tx = await mintV1(this.umiFactory.umi, {
       mint: mintPubkey,
-      authority: this.umi.payer,
+      authority: this.umiFactory.umi.payer,
       amount: amount,
       tokenOwner: destinationPubkey,
       tokenStandard: TokenStandard.FungibleAsset,
-    }).sendAndConfirm(this.umi);
+    }).sendAndConfirm(this.umiFactory.umi);
     return tx.signature.toString();
   }
 
@@ -70,30 +59,19 @@ class MetaplexServices {
     cloudinaryFiles: CloudinaryResource[],
   ): Promise<string> {
     let files = await generateGenericFile(cloudinaryFiles);
-    let filesURL = await this.uploadFiles(files);
-    let coverImage = filesURL.shift();
-    let jsonURL = await this.uploadJson(asset, coverImage, filesURL);
+    let filesURL = await this.umiFactory.umi.uploader.upload(files);
+    let coverImage = filesURL.shift(); //coverImage is first item on the list
+
+    let jsonMetadata = createSemiFungibleMetadata(asset, coverImage, filesURL);
+    let jsonURL = await this.umiFactory.umi.uploader.uploadJson(jsonMetadata);
+
     return jsonURL;
-  }
-
-  private async uploadFiles(files: GenericFile[]): Promise<string[]> {
-    let result = await this.umi.uploader.upload(files);
-    return result;
-  }
-
-  private async uploadJson(
-    asset: UploadAsset,
-    coverImage: string,
-    extraImages: string[],
-  ) {
-    let metadata = createSemiFungibleMetadata(asset, coverImage, extraImages);
-    return await this.umi.uploader.uploadJson(metadata);
   }
 
   private getCreators(dev: string): Creator[] {
     return [
       {
-        address: this.umi.payer.publicKey,
+        address: this.umiFactory.umi.payer.publicKey,
         verified: true,
         share: 100,
       },

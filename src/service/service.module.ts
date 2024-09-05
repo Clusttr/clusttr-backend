@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { HeliusService } from './api/HeliusService';
 import { ConfigService } from '@nestjs/config';
 import { CloudinaryService } from './media_manager/CloudinaryService';
+import { MetaplexServices } from './MetaplexService';
 
 @Module({
+  imports: [ServiceModule],
   providers: [
     {
       provide: HeliusService,
@@ -23,7 +25,8 @@ import { CloudinaryService } from './media_manager/CloudinaryService';
         return new CloudinaryService(cloudName, apiKey, apiSecret);
       },
     },
+    MetaplexServices,
   ],
-  exports: [HeliusService],
+  exports: [HeliusService, CloudinaryService, MetaplexServices],
 })
 export class ServiceModule {}
