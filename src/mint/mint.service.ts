@@ -11,6 +11,9 @@ import { UploadAssetQueryDto } from './dto/upload_asset_query.dto';
 import { CloudinaryService } from 'src/service/media_manager/CloudinaryService';
 import { MetaplexServices } from 'src/service/MetaplexService';
 import { CreateAssetResDto } from 'src/asset/dto/create-asset-res.dto';
+import { MintAssetResDto } from './dto/mint_asset_res.dto';
+import { MintAssetReqDto } from './dto/mint_asset_req.dto';
+import { createSignerFromString } from 'src/solana/utils/umi';
 
 @Injectable()
 export class MintService {
@@ -88,6 +91,27 @@ export class MintService {
     await this.cloudinaryService.deleteFolder(asset.assetKey, filesKey);
     //delete asset from db
     await this.uploadAssetModel.findByIdAndDelete(assetId);
-    return { token: asset.assetKey, txSig: txSig };
+    return { token: asset.assetKey, txSig };
+  }
+
+  async mintAsset(id: string, req: MintAssetReqDto): Promise<MintAssetResDto> {
+    let asset = await this.uploadAssetModel.findById(id);
+    if (!asset) {
+      throw new BadRequestException(
+        "Asset can't be found; may have been minted",
+      );
+    }
+    let keypair = createSignerFromString(req.privateKey);
+    if (asset.assetKey !== keypair.publicKey) {
+      throw new BadRequestException(
+        "Secret key not valid for asset, can't mint",
+      );
+    }
+    let txSig = await this.metaplexService.mintToken(
+      req.privateKey,
+      1_000,
+      asset.developer,
+    );
+    return { token: asset.assetKey, txSig };
   }
 }

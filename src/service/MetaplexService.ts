@@ -1,4 +1,3 @@
-import * as bs58 from 'bs58';
 import { percentAmount, GenericFile } from '@metaplex-foundation/umi';
 import {
   Creator,
@@ -7,8 +6,8 @@ import {
   mintV1,
 } from '@metaplex-foundation/mpl-token-metadata';
 import { UploadAsset } from 'src/mint/schema/upload_asset.schema';
-import { UMIFactory } from 'src/solana/utils/umi';
-import { createSignerFromKeypair, publicKey } from '@metaplex-foundation/umi';
+import { createSignerFromString, UMIFactory } from 'src/solana/utils/umi';
+import { publicKey } from '@metaplex-foundation/umi';
 import { createSemiFungibleMetadata } from './types/SemiFungibleMetadeta';
 import {
   CloudinaryResource,
@@ -82,11 +81,4 @@ export class MetaplexServices {
       },
     ];
   }
-}
-
-function createSignerFromString(secretKey: string) {
-  const secretKeyBits = bs58.decode(secretKey);
-  const keypair = this.umi.eddsa.createKeypairFromSecretKey(secretKeyBits);
-  const keypairSigner = createSignerFromKeypair(this.umi, keypair);
-  return keypairSigner;
 }

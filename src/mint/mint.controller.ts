@@ -16,6 +16,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/service/media_manager/CloudinaryService';
 import { UploadAssetQueryDto } from './dto/upload_asset_query.dto';
 import { CreateAssetResDto } from 'src/asset/dto/create-asset-res.dto';
+import { MintAssetResDto } from './dto/mint_asset_res.dto';
 
 @ApiTags('mint')
 @Controller('mint')
@@ -72,6 +73,11 @@ export class MintController {
   @Post('create/:id')
   async createAsset(@Param('id') assetId: string): Promise<CreateAssetResDto> {
     return this.mintService.createAsset(assetId);
+  }
+
+  @Post('mint/:id')
+  async mintAsset(@Param('id') assetId: string): Promise<MintAssetResDto> {
+    return this.mintService.mintAsset(assetId);
   }
 
   private moveItemToIndexZero(
