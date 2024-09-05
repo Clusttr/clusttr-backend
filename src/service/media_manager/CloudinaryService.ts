@@ -41,24 +41,21 @@ export class CloudinaryService {
     return Promise.all(uploadPromise);
   }
 
-  async fetchImages(folder_name: string) {
+  async fetchImages(assetId: string) {
     const result: CloudinaryResult = await cloudinary.api.resources({
       type: 'upload',
-      prefix: `upload_asset/${folder_name}`,
+      prefix: `asset_mint/${assetId}`,
       max_results: 20,
     });
     return result.resources;
   }
-}
 
-async function deleteFolder(
-  folder: string,
-  contentsId: string[],
-): Promise<void> {
-  try {
-    await cloudinary.api.delete_resources(contentsId);
-    await cloudinary.api.delete_folder(`upload_asset/${folder}`);
-  } catch (error) {
-    throw error;
+  async deleteFolder(folder: string, contentsId: string[]): Promise<void> {
+    try {
+      await cloudinary.api.delete_resources(contentsId);
+      await cloudinary.api.delete_folder(`upload_asset/${folder}`);
+    } catch (error) {
+      throw error;
+    }
   }
 }
