@@ -10,6 +10,7 @@ import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { mplCandyMachine } from '@metaplex-foundation/mpl-candy-machine';
 import { Keypair } from '@solana/web3.js';
 import { createBundlrUploader } from '@metaplex-foundation/umi-uploader-bundlr';
+import * as bs58 from 'bs58';
 
 const rpc = 'https://api.devnet.solana.com';
 
@@ -30,4 +31,11 @@ export class UMIFactory {
 
     this.umi = umi;
   }
+}
+
+export function createSignerFromString(secretKey: string) {
+  const secretKeyBits = bs58.decode(secretKey);
+  const keypair = this.umi.eddsa.createKeypairFromSecretKey(secretKeyBits);
+  const keypairSigner = createSignerFromKeypair(this.umi, keypair);
+  return keypairSigner;
 }

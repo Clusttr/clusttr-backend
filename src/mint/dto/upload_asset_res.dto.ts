@@ -9,18 +9,10 @@ import {
   MaxLength,
 } from 'class-validator';
 import { Types } from 'mongoose';
-import { UpdateAccountTypeDto } from 'src/user/dto/updateAccountType.dto';
 import { UploadAsset } from '../schema/upload_asset.schema';
+import { PropertyType } from './upload_asset_req.dto';
 
-enum PropertyType {
-  apartment,
-  detatchedDuplex,
-  semiDetachedDeplex,
-  terracDuplex,
-  maisonette,
-}
-
-export class UploadAssetDto {
+export class UploadAssetDtoRes {
   @IsOptional()
   @IsString()
   @ApiProperty({
@@ -112,23 +104,15 @@ export class UploadAssetDto {
     name: 'displayImage',
     example: 'https://domain.com/random_pubkey_on',
   })
-  displayImage: string;
-
-  @IsArray()
-  @IsOptional()
-  @ApiProperty({
-    name: 'extra images',
-    example: ['https://domain.com/random_pubkey_on'],
-  })
-  extraImages: string[];
+  coverImage: string;
 }
 
-export function createUploadAsset(
+export function createUploadAssetRes(
   asset: UploadAsset & { _id: Types.ObjectId },
-): UploadAssetDto {
+): UploadAssetDtoRes {
   return {
     id: asset._id.toString(),
-    assetKey: asset.assetKey,
+    assetKey: asset.mintKey,
     name: asset.name,
     description: asset.description,
     bedrooms: asset.bedrooms,
@@ -138,7 +122,6 @@ export function createUploadAsset(
     latlng: asset.latlng,
     propertyType: asset.propertyType,
     year: asset.year,
-    displayImage: asset.displayImage,
-    extraImages: asset.extraImages,
+    coverImage: asset.coverImage,
   };
 }

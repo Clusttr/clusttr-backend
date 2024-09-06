@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { createUploadAsset, UploadAssetDto } from './dto/upload_asset.dto';
+import { UploadAssetDtoReq } from './dto/upload_asset_req.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { UploadAsset } from './schema/upload_asset.schema';
 import { Model } from 'mongoose';
@@ -14,6 +14,10 @@ import { CreateAssetResDto } from 'src/asset/dto/create-asset-res.dto';
 import { MintAssetResDto } from './dto/mint_asset_res.dto';
 import { MintAssetReqDto } from './dto/mint_asset_req.dto';
 import { createSignerFromString } from 'src/solana/utils/umi';
+import {
+  createUploadAssetRes,
+  UploadAssetDtoRes,
+} from './dto/upload_asset_res.dto';
 
 @Injectable()
 export class MintService {
@@ -23,37 +27,37 @@ export class MintService {
     private readonly metaplexService: MetaplexServices,
   ) {}
 
-  async getAsset(assetId: string): Promise<UploadAssetDto> {
+  async getAsset(assetId: string): Promise<UploadAssetDtoRes> {
     try {
       const asset = await this.uploadAssetModel.findById(assetId);
       if (!asset) {
         throw new NotFoundException();
       }
-      return createUploadAsset(asset);
+      return createUploadAssetRes(asset);
     } catch (error) {
       throw error;
     }
   }
 
-  async searchAsset(query: UploadAssetQueryDto): Promise<UploadAssetDto[]> {
+  async searchAsset(query: UploadAssetQueryDto): Promise<UploadAssetDtoRes[]> {
     try {
       let assets = await this.uploadAssetModel.find({ ...query });
-      return assets.map((x) => createUploadAsset(x));
+      return assets.map((x) => createUploadAssetRes(x));
     } catch (error) {
       throw error;
     }
   }
 
-  async uploadAsset(asset: UploadAssetDto): Promise<UploadAssetDto> {
+  async uploadAsset(asset: UploadAssetDtoReq): Promise<UploadAssetDtoReq> {
     try {
       const result = await this.uploadAssetModel.findOneAndUpdate(
-        { assetKey: asset.assetKey },
+        { mintKey: asset.assetKey },
         asset,
         { upsert: true },
       );
 
       const updatedAsset = await this.uploadAssetModel.findById(result.id);
-      return createUploadAsset(updatedAsset);
+      return createUploadAssetRes(updatedAsset);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -61,16 +65,28 @@ export class MintService {
 
   async updateAssetMediaURL(
     id: string,
-    displayImage: string,
-    extraImages: string[],
-  ): Promise<UploadAssetDto> {
+    coverImg: string,
+    files: Array<Express.Multer.File>,
+  ): Promise<UploadAssetDtoRes> {
     try {
+      let orderdFiles = this.moveItemToIndexZero(coverImg, files);
+      const asset = await this.uploadAssetModel.findById(id);
+      if (!asset) {
+        throw new NotFoundException(`Asset of id: ${id} not found`);
+      }
+
+      const uploadMedia = await this.cloudinaryService.uploadImages(
+        orderdFiles,
+        asset.mintKey,
+      );
+      const mediaURL = uploadMedia.map((x) => x.url);
+      const coverURL = mediaURL.shift();
+
       const result = await this.uploadAssetModel.findByIdAndUpdate(id, {
-        displayImage,
-        extraImages,
+        coverImage: coverURL,
       });
-      const updateAsset = await this.uploadAssetModel.findById(result.id);
-      return createUploadAsset(updateAsset);
+      const updatedAsset = await this.uploadAssetModel.findById(result.id);
+      return createUploadAssetRes(updatedAsset);
     } catch (error) {
       throw error;
     }
@@ -84,14 +100,14 @@ export class MintService {
     //fetch asset
     let asset = await this.uploadAssetModel.findById(assetId);
     //fetch asset media to arweave
-    let files = await this.cloudinaryService.fetchImages(asset.assetKey);
+    let files = await this.cloudinaryService.fetchImages(asset.mintKey);
     let txSig = await this.metaplexService.createToken(asset, files);
     //delete asset from cloudinary
     let filesKey = files.map((x) => x.asset_id);
-    await this.cloudinaryService.deleteFolder(asset.assetKey, filesKey);
+    await this.cloudinaryService.deleteFolder(asset.mintKey, filesKey);
     //delete asset from db
     await this.uploadAssetModel.findByIdAndDelete(assetId);
-    return { token: asset.assetKey, txSig };
+    return { token: asset.mintKey, txSig };
   }
 
   async mintAsset(id: string, req: MintAssetReqDto): Promise<MintAssetResDto> {
@@ -102,7 +118,7 @@ export class MintService {
       );
     }
     let keypair = createSignerFromString(req.privateKey);
-    if (asset.assetKey !== keypair.publicKey) {
+    if (asset.mintKey !== keypair.publicKey) {
       throw new BadRequestException(
         "Secret key not valid for asset, can't mint",
       );
@@ -112,6 +128,25 @@ export class MintService {
       1_000,
       asset.developer,
     );
-    return { token: asset.assetKey, txSig };
+    return { token: asset.mintKey, txSig };
+  }
+
+  private moveItemToIndexZero(
+    id: string,
+    list: Express.Multer.File[],
+  ): Express.Multer.File[] {
+    const index = list.findIndex((x) => x.originalname === id);
+
+    if (index == -1) {
+      throw new BadRequestException(`File with name "${id}" not found`);
+    }
+
+    if (index == 0) {
+      return list;
+    }
+
+    const [item] = list.splice(index, 1);
+    list.unshift(item);
+    return list;
   }
 }

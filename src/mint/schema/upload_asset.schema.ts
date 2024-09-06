@@ -8,7 +8,7 @@ export class UploadAsset {
   developer: string;
 
   @Prop({ unique: [true, "Asset can't be created more than once"] })
-  assetKey: string;
+  mintKey: string;
 
   @Prop()
   name: string;
@@ -38,7 +38,7 @@ export class UploadAsset {
   year: number;
 
   @Prop()
-  displayImage: string;
+  coverImage: string;
 
   @Prop({
     type: () => [String],

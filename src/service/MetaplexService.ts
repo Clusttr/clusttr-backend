@@ -19,7 +19,7 @@ export class MetaplexServices {
 
   async createToken(asset: UploadAsset, files: CloudinaryResource[]) {
     let uri = await this.upload(asset, files);
-    let mint = createSignerFromString(asset.assetKey);
+    let mint = createSignerFromString(asset.mintKey);
     let creators = this.getCreators(asset.developer);
 
     const tx = await createFungibleAsset(this.umiFactory.umi, {

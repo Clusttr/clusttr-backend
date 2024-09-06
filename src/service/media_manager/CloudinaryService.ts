@@ -15,14 +15,16 @@ export class CloudinaryService {
   }
 
   async uploadImage(image: Express.Multer.File, folder: string) {
+    const name = image.originalname.split('.').shift();
     let result: Promise<UploadApiResponse> = new Promise((resolve, reject) => {
       let value = cloudinary.uploader
         .upload_stream(
           {
             resource_type: 'auto',
             folder: `asset_mint/${folder}`,
-            use_filename: true,
-            filename_override: image.originalname,
+            public_id: name,
+            overwrite: true,
+            invalidate: true,
           },
           (error, result) => {
             if (error) return reject(error);

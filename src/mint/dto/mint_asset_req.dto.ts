@@ -6,11 +6,18 @@ export class MintAssetReqDto {
   @ApiProperty({
     description: 'Token Address',
   })
-  readonly token: string;
+  readonly privateKey: string;
 
   @IsNotEmpty()
   @ApiProperty({
     description: 'Transaction Signature',
   })
-  readonly txSig: string;
+  readonly amount: number;
+}
+
+enum AmountMintable {
+  one,
+  ten,
+  hundred,
+  thousand,
 }
