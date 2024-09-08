@@ -13,14 +13,10 @@ import { MetaplexServices } from 'src/service/MetaplexService';
 import { CreateAssetResDto } from 'src/asset/dto/create-asset-res.dto';
 import { MintAssetResDto } from './dto/mint_asset_res.dto';
 import { MintAssetReqDto } from './dto/mint_asset_req.dto';
-// import { createSignerFromString } from 'src/solana/utils/umi';
 import {
   createUploadAssetRes,
   UploadAssetDtoRes,
 } from './dto/upload_asset_res.dto';
-import bs58 from 'bs58';
-import { createSignerFromKeypair } from '@metaplex-foundation/umi';
-import { Umi } from '@metaplex-foundation/umi';
 import { CreateAssetReqDto } from './dto/create_asset_req.dto';
 
 @Injectable()
@@ -52,17 +48,22 @@ export class MintService {
     }
   }
 
-  async uploadAsset(asset: UploadAssetDtoReq): Promise<UploadAssetDtoReq> {
+  async uploadAsset(asset: UploadAssetDtoReq): Promise<UploadAssetDtoRes> {
     try {
       const result = await this.uploadAssetModel.findOneAndUpdate(
-        { mintKey: asset.assetKey },
+        { mintKey: asset.mintKey },
         asset,
         { upsert: true },
       );
 
+      if (!result) {
+        return { ...asset, coverImage: null };
+      }
+
       const updatedAsset = await this.uploadAssetModel.findById(result.id);
       return createUploadAssetRes(updatedAsset);
     } catch (error) {
+      console.log({ error });
       throw new BadRequestException(error);
     }
   }
@@ -116,7 +117,6 @@ export class MintService {
     console.log({ txSig });
     //delete asset from cloudinary
     let filesKey = files.map((x) => x.public_id);
-    console.log({ filesKey });
     await this.cloudinaryService.deleteFolder(asset.mintKey, filesKey);
     //delete asset from db
     await this.uploadAssetModel.findByIdAndDelete(assetId);
@@ -124,24 +124,12 @@ export class MintService {
   }
 
   async mintAsset(id: string, req: MintAssetReqDto): Promise<MintAssetResDto> {
-    let asset = await this.uploadAssetModel.findById(id);
-    if (!asset) {
-      throw new BadRequestException(
-        "Asset can't be found; may have been minted",
-      );
-    }
-    let keypair = this.metaplexService.createSignerFromString(req.privateKey);
-    if (asset.mintKey !== keypair.publicKey) {
-      throw new BadRequestException(
-        "Secret key not valid for asset, can't mint",
-      );
-    }
     let txSig = await this.metaplexService.mintToken(
-      req.privateKey,
-      1_000,
-      asset.developer,
+      req.mintKey,
+      req.amount,
+      '9831HW6Ljt8knNaN6r6JEzyiey939A2me3JsdMymmz5J', //asset.developer,
     );
-    return { token: asset.mintKey, txSig };
+    return { token: req.mintKey, txSig };
   }
 
   private moveItemToIndexZero(

@@ -2,11 +2,7 @@ import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { CloudinaryResult } from '../types/CloudinaryResource';
 
 export class CloudinaryService {
-  constructor(
-    private readonly cloudName: string,
-    private readonly apiKey: string,
-    private readonly apiSecret: string,
-  ) {
+  constructor(cloudName: string, apiKey: string, apiSecret: string) {
     cloudinary.config({
       cloud_name: cloudName,
       api_key: apiKey,
@@ -52,9 +48,9 @@ export class CloudinaryService {
     return result.resources;
   }
 
-  async deleteFolder(folder: string, contentsId: string[]): Promise<void> {
+  async deleteFolder(folder: string, assetPublicIds: string[]): Promise<void> {
     try {
-      await cloudinary.api.delete_resources(contentsId);
+      await cloudinary.api.delete_resources(assetPublicIds);
       await cloudinary.api.delete_folder(`asset_mint/${folder}`);
     } catch (error) {
       throw error;

@@ -23,8 +23,8 @@ export class UploadAssetDtoReq {
   @IsOptional()
   @IsString()
   @ApiProperty({
-    name: 'string',
-    example: 'asset_id',
+    name: 'id',
+    example: '_id',
     description: 'Id',
   })
   readonly id: string;
@@ -33,10 +33,10 @@ export class UploadAssetDtoReq {
   @IsString()
   @ApiProperty({
     name: 'string',
-    example: 'some_random_secret_key',
-    description: 'Private key',
+    example: 'some_random_public_key',
+    description: 'Public key',
   })
-  readonly assetKey: string;
+  readonly mintKey: string;
 
   @IsNotEmpty()
   @IsString()
@@ -45,6 +45,14 @@ export class UploadAssetDtoReq {
     example: 'Chatam house',
   })
   readonly name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    name: 'symbol',
+    example: 'Chatam house',
+  })
+  readonly symbol: string;
 
   @IsNotEmpty()
   @IsString()
@@ -111,8 +119,9 @@ export function createUploadAssetReq(
 ): UploadAssetDtoReq {
   return {
     id: asset._id.toString(),
-    assetKey: asset.mintKey,
+    mintKey: asset.mintKey,
     name: asset.name,
+    symbol: asset.symbol,
     description: asset.description,
     bedrooms: asset.bedrooms,
     bathrooms: asset.bathrooms,

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -30,21 +29,21 @@ export class MintController {
   ) {}
 
   @Get('asset/:id')
-  async getAsset(@Param('id') assetId: string): Promise<UploadAssetDtoReq> {
+  async getAsset(@Param('id') assetId: string): Promise<UploadAssetDtoRes> {
     return this.mintService.getAsset(assetId);
   }
 
   @Get('asset')
   async getAssets(
     @Query() query: UploadAssetQueryDto,
-  ): Promise<UploadAssetDtoReq[]> {
+  ): Promise<UploadAssetDtoRes[]> {
     return this.mintService.searchAsset(query);
   }
 
   @Post('upload_asset')
   async uploadAsset(
     @Body() asset: UploadAssetDtoReq,
-  ): Promise<UploadAssetDtoReq> {
+  ): Promise<UploadAssetDtoRes> {
     return this.mintService.uploadAsset(asset);
   }
 

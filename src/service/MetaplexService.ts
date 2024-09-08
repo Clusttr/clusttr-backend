@@ -1,4 +1,4 @@
-import { percentAmount, GenericFile } from '@metaplex-foundation/umi';
+import { percentAmount } from '@metaplex-foundation/umi';
 import {
   Creator,
   TokenStandard,
@@ -17,7 +17,6 @@ import {
 import bs58 from 'bs58';
 import { createSignerFromKeypair } from '@metaplex-foundation/umi';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class MetaplexServices {
@@ -38,7 +37,7 @@ export class MetaplexServices {
       mint,
       authority: this.umiFactory.umi.payer,
       name: asset.name,
-      symbol: 'CHH1',
+      symbol: asset.symbol,
       uri,
       isMutable: true,
       sellerFeeBasisPoints: percentAmount(2),

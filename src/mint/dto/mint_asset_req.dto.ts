@@ -6,7 +6,7 @@ export class MintAssetReqDto {
   @ApiProperty({
     description: 'Token Address',
   })
-  readonly privateKey: string;
+  readonly mintKey: string;
 
   @IsNotEmpty()
   @ApiProperty({

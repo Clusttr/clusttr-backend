@@ -14,6 +14,9 @@ export class UploadAsset {
   name: string;
 
   @Prop()
+  symbol: string;
+
+  @Prop()
   description: string;
 
   @Prop()
