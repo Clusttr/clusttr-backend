@@ -29,10 +29,7 @@ export async function generateGenericFile(
 ): Promise<GenericFile[]> {
   const filesData = await Promise.all(
     resources.map(async (resources) => {
-      let fileId = resources.public_id.split('/').pop();
-      let fileNameList = fileId.split('_');
-      fileNameList.pop();
-      let fileName = fileNameList.join('_');
+      let fileName = resources.public_id.split('/').pop();
       const response = await axios.get(resources.secure_url, {
         responseType: 'arraybuffer',
       });

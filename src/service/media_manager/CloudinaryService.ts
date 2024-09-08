@@ -55,7 +55,7 @@ export class CloudinaryService {
   async deleteFolder(folder: string, contentsId: string[]): Promise<void> {
     try {
       await cloudinary.api.delete_resources(contentsId);
-      await cloudinary.api.delete_folder(`upload_asset/${folder}`);
+      await cloudinary.api.delete_folder(`asset_mint/${folder}`);
     } catch (error) {
       throw error;
     }

@@ -13,11 +13,15 @@ import { MetaplexServices } from 'src/service/MetaplexService';
 import { CreateAssetResDto } from 'src/asset/dto/create-asset-res.dto';
 import { MintAssetResDto } from './dto/mint_asset_res.dto';
 import { MintAssetReqDto } from './dto/mint_asset_req.dto';
-import { createSignerFromString } from 'src/solana/utils/umi';
+// import { createSignerFromString } from 'src/solana/utils/umi';
 import {
   createUploadAssetRes,
   UploadAssetDtoRes,
 } from './dto/upload_asset_res.dto';
+import bs58 from 'bs58';
+import { createSignerFromKeypair } from '@metaplex-foundation/umi';
+import { Umi } from '@metaplex-foundation/umi';
+import { CreateAssetReqDto } from './dto/create_asset_req.dto';
 
 @Injectable()
 export class MintService {
@@ -96,14 +100,23 @@ export class MintService {
     return 'add more info';
   }
 
-  async createAsset(assetId: string): Promise<CreateAssetResDto> {
+  async createAsset(
+    assetId: string,
+    req: CreateAssetReqDto,
+  ): Promise<CreateAssetResDto> {
     //fetch asset
     let asset = await this.uploadAssetModel.findById(assetId);
     //fetch asset media to arweave
     let files = await this.cloudinaryService.fetchImages(asset.mintKey);
-    let txSig = await this.metaplexService.createToken(asset, files);
+    let txSig = await this.metaplexService.createToken(
+      asset,
+      req.privateKey,
+      files,
+    );
+    console.log({ txSig });
     //delete asset from cloudinary
-    let filesKey = files.map((x) => x.asset_id);
+    let filesKey = files.map((x) => x.public_id);
+    console.log({ filesKey });
     await this.cloudinaryService.deleteFolder(asset.mintKey, filesKey);
     //delete asset from db
     await this.uploadAssetModel.findByIdAndDelete(assetId);
@@ -117,7 +130,7 @@ export class MintService {
         "Asset can't be found; may have been minted",
       );
     }
-    let keypair = createSignerFromString(req.privateKey);
+    let keypair = this.metaplexService.createSignerFromString(req.privateKey);
     if (asset.mintKey !== keypair.publicKey) {
       throw new BadRequestException(
         "Secret key not valid for asset, can't mint",

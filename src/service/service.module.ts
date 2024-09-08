@@ -3,9 +3,11 @@ import { HeliusService } from './api/HeliusService';
 import { ConfigService } from '@nestjs/config';
 import { CloudinaryService } from './media_manager/CloudinaryService';
 import { MetaplexServices } from './MetaplexService';
+import { UMIFactory } from 'src/solana/utils/umi';
+import { SolanaModule } from 'src/solana/solana.module';
 
 @Module({
-  imports: [ServiceModule],
+  imports: [SolanaModule],
   providers: [
     {
       provide: HeliusService,

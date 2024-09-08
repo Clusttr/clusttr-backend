@@ -1,5 +1,5 @@
 import { Keypair } from '@solana/web3.js';
-const bs58 = require('bs58');
+import bs58 from 'bs58';
 
 export const generateAccount = (secretKey: string) => {
     const data = isHexadecimal(secretKey) ? Uint8Array.from(Buffer.from(secretKey, 'hex')) : bs58.decode(secretKey)

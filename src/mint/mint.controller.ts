@@ -18,6 +18,8 @@ import { UploadAssetQueryDto } from './dto/upload_asset_query.dto';
 import { CreateAssetResDto } from 'src/asset/dto/create-asset-res.dto';
 import { MintAssetResDto } from './dto/mint_asset_res.dto';
 import { MintAssetReqDto } from './dto/mint_asset_req.dto';
+import { UploadAssetDtoRes } from './dto/upload_asset_res.dto';
+import { CreateAssetReqDto } from './dto/create_asset_req.dto';
 
 @ApiTags('mint')
 @Controller('mint')
@@ -52,7 +54,7 @@ export class MintController {
     @Param('id') id: string,
     @Query('cover_img') coverImg: string,
     @UploadedFiles() files: Array<Express.Multer.File>,
-  ): Promise<UploadAssetDtoReq> {
+  ): Promise<UploadAssetDtoRes> {
     return await this.mintService.updateAssetMediaURL(id, coverImg, files);
   }
 
@@ -62,8 +64,11 @@ export class MintController {
   }
 
   @Post('create/:id')
-  async createAsset(@Param('id') assetId: string): Promise<CreateAssetResDto> {
-    return this.mintService.createAsset(assetId);
+  async createAsset(
+    @Param('id') assetId: string,
+    @Body() req: CreateAssetReqDto,
+  ): Promise<CreateAssetResDto> {
+    return this.mintService.createAsset(assetId, req);
   }
 
   @Post('mint/:id')
