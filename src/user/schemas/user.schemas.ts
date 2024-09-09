@@ -23,17 +23,17 @@ export class User {
   @Prop()
   publicKey: string;
 
-    @Prop({
-      type: () => [String],
-      validate: { 
-        validator: function(array: string[]) {
-            const uniqueSet = new Set(array);
-            return uniqueSet.size === array.length;
-        },
-        message: 'Bookmarks array must contain unique values'
-    }
+  @Prop({
+    type: () => [String],
+    validate: {
+      validator: function (array: string[]) {
+        const uniqueSet = new Set(array);
+        return uniqueSet.size === array.length;
+      },
+      message: 'Bookmarks array must contain unique values',
+    },
   })
-  bookmarks: string[]
+  bookmarks: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

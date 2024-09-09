@@ -9,8 +9,11 @@ import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { mplCandyMachine } from '@metaplex-foundation/mpl-candy-machine';
 import { Keypair } from '@solana/web3.js';
+import { createBundlrUploader } from '@metaplex-foundation/umi-uploader-bundlr';
+import { createIrysUploader } from '@metaplex-foundation/umi-uploader-irys';
 
-const rpc = 'https://api.devnet.solana.com';
+const rpc =
+  'https://devnet.helius-rpc.com/?api-key=d2a5d651-c00a-4072-a7d8-9e760f9666e6'; //https:api.devnet.solana.com';
 
 export class UMIFactory {
   umi: Umi;
@@ -21,10 +24,11 @@ export class UMIFactory {
       .use(fetchHttp())
       .use(mplCandyMachine());
 
-
     const mKeypair = umi.eddsa.createKeypairFromSecretKey(keypair.secretKey);
     const signer = createSignerFromKeypair(umi, mKeypair);
     umi.use(keypairIdentity(signer));
+
+    umi.uploader = createIrysUploader(umi); //createBundlrUploader(umi);
 
     this.umi = umi;
   }

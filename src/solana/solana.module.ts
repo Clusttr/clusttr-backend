@@ -24,11 +24,10 @@ import { Umi } from '@metaplex-foundation/umi';
       provide: UMIFactory,
       inject: [Keypair],
       useFactory: (keyPair: Keypair) => {
-        return new UMIFactory(keyPair)
+        return new UMIFactory(keyPair);
       },
     },
   ],
   exports: [Connection, Keypair, UMIFactory],
 })
-
 export class SolanaModule {}

@@ -24,32 +24,35 @@ export class UserDto {
 
   @ApiProperty({
     description: 'profile Image',
-    example: 'https://s.gravatar.com/avatar/12e2fc7fa7f5cc5d2f09990379004fab?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fto.png'
+    example:
+      'https://s.gravatar.com/avatar/12e2fc7fa7f5cc5d2f09990379004fab?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fto.png',
   })
   readonly profileImage: string;
 
   @ApiProperty({
     description: 'public key',
-    example: 'HkkVS92U3WwxZz1VKJ2ocD4S4prjHiKz9EBCaGD2s8Fb'
+    example: 'HkkVS92U3WwxZz1VKJ2ocD4S4prjHiKz9EBCaGD2s8Fb',
   })
-  readonly publicKey
+  readonly publicKey;
 
   @ApiProperty({
     description: 'role',
-    example: 'user'
+    example: 'user',
   })
-  readonly accountType: AccountType
+  readonly accountType: AccountType;
 }
 
-export function createUseDto(user: User & {
-  _id: Types.ObjectId;
-}): UserDto {
+export function createUseDto(
+  user: User & {
+    _id: Types.ObjectId;
+  },
+): UserDto {
   return {
     id: user._id.toString(),
     name: user.name,
     email: user.email,
     profileImage: user.profileImage,
     publicKey: user.publicKey,
-    accountType: user.accountType
-  }
+    accountType: user.accountType,
+  };
 }

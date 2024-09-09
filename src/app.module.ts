@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -14,6 +14,7 @@ import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { UserSchema } from './user/schemas/user.schemas';
+import { UploadAssetSchema } from './mint/schema/upload_asset.schema';
 import { TokenModule } from './token/token.module';
 import { ServiceModule } from './service/service.module';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -21,6 +22,9 @@ import { DowntownModule } from './downtown/downtown.module';
 import { BookmarkService } from './bookmark/bookmark.service';
 import { BookmarkController } from './bookmark/bookmark.controller';
 import { BookmarkModule } from './bookmark/bookmark.module';
+import { MintModule } from './mint/mint.module';
+import { MintController } from './mint/mint.controller';
+import { MintService } from './mint/mint.service';
 
 @Module({
   imports: [
@@ -32,17 +36,36 @@ import { BookmarkModule } from './bookmark/bookmark.module';
     ScheduleModule.forRoot(),
     MongooseModule.forRoot(process.env.DB_URI),
     SolanaModule,
-    ServiceModule,
     AuthModule,
     WaitlistModule,
     AssetModule,
     UserModule,
-    MongooseModule.forFeature([{name: 'User', schema: UserSchema}]),
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: 'UploadAsset', schema: UploadAssetSchema },
+    ]),
     TokenModule,
     DowntownModule,
     BookmarkModule,
+    MintModule,
+    ServiceModule,
   ],
-  controllers: [AppController, AccountController, AccountController, UserController, BookmarkController],
-  providers: [AppService, AccountService, UserService, BookmarkService],
+  controllers: [
+    AppController,
+    AccountController,
+    AccountController,
+    UserController,
+    BookmarkController,
+    MintController,
+  ],
+  providers: [
+    AppService,
+    AccountService,
+    UserService,
+    BookmarkService,
+    MintService,
+  ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {}
+}
