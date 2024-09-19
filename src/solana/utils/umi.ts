@@ -12,15 +12,18 @@ import { Keypair } from '@solana/web3.js';
 import { createBundlrUploader } from '@metaplex-foundation/umi-uploader-bundlr';
 import { createIrysUploader } from '@metaplex-foundation/umi-uploader-irys';
 
-const rpc =
-  'https://devnet.helius-rpc.com/?api-key=d2a5d651-c00a-4072-a7d8-9e760f9666e6'; //https:api.devnet.solana.com';
+const heliusEndpoint = 'https://devnet.helius-rpc.com/';
 
 export class UMIFactory {
   umi: Umi;
-  constructor(private readonly keypair: Keypair) {
-    const umi = createUmi(rpc)
+  constructor(
+    private readonly keypair: Keypair,
+    private readonly heliusApiKey: String,
+  ) {
+    let rpcURL = heliusEndpoint + '?api-key=' + heliusApiKey;
+    const umi = createUmi(rpcURL)
       .use(web3JsEddsa())
-      .use(web3JsRpc(rpc))
+      .use(web3JsRpc(rpcURL))
       .use(fetchHttp())
       .use(mplCandyMachine());
 
