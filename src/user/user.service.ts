@@ -28,6 +28,13 @@ export class UserService {
     return createUserDto(user);
   }
 
+  async getUsers(ids: string[]): Promise<UserDto[]> {
+    let users = await this.userModel.find({
+      _id: { $in: ids },
+    });
+    return users.map((x) => createUserDto(x));
+  }
+
   async updateUserRole(update: UpdateAccountTypeDto): Promise<UserDto> {
     const user = await this.userModel.findById(update.userId);
     if (user.accountType !== AccountType.admin) {
@@ -55,7 +62,12 @@ export class UserService {
     return { amount, mint: CONST.USDC_PUBKEY, txSig };
   }
 
-  async addBenefactor(userId: string, benefactorId: string) {
+  async getBenefactors(userId: string): Promise<UserDto[]> {
+    const user = await this.userModel.findById(userId).select('benefactors');
+    return this.getUsers(user.benefactors);
+  }
+
+  async addBenefactor(userId: string, benefactorId: string): Promise<UserDto> {
     let benefactor = await this.getUser(benefactorId);
     await this.userModel.findOneAndUpdate(
       { _id: userId },

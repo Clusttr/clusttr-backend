@@ -42,9 +42,19 @@ export class UserController {
     return this.userService.airdrop(user);
   }
 
+  @Get('/benefactor')
+  @ApiOperation({ summary: 'Get benefactors' })
+  async getBenefactors(@Request() req: { user: UserDto }): Promise<UserDto[]> {
+    const userId = req.user.id;
+    return this.userService.getBenefactors(userId);
+  }
+
   @Post('benefactor/:id')
   @ApiOperation({ summary: 'Add beneficiary' })
-  async addBenefactor(@Request() req, @Param('id') beneficiaryId: string) {
+  async addBenefactor(
+    @Request() req,
+    @Param('id') beneficiaryId: string,
+  ): Promise<UserDto> {
     const userId = req.user.id;
     return this.userService.addBenefactor(userId, beneficiaryId);
   }
