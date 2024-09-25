@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { Connection, Keypair, clusterApiUrl } from '@solana/web3.js';
 import { generateAccount } from './utils/get-account';
 import { UMIFactory } from './utils/umi';
-import { Umi } from '@metaplex-foundation/umi';
 
 @Global()
 @Module({
@@ -22,9 +21,10 @@ import { Umi } from '@metaplex-foundation/umi';
     },
     {
       provide: UMIFactory,
-      inject: [Keypair],
-      useFactory: (keyPair: Keypair) => {
-        return new UMIFactory(keyPair);
+      inject: [Keypair, ConfigService],
+      useFactory: (keyPair: Keypair, config: ConfigService) => {
+        const heliusApiKey = config.get<string>('HELIUS_API_KEY');
+        return new UMIFactory(keyPair, heliusApiKey);
       },
     },
   ],

@@ -112,7 +112,7 @@ export class UploadAssetDtoRes {
     name: 'displayImage',
     example: 'https://domain.com/random_pubkey_on',
   })
-  coverImage: string;
+  coverImage?: string;
 }
 
 export function createUploadAssetRes(

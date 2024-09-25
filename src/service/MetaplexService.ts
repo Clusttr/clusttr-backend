@@ -77,7 +77,6 @@ export class MetaplexServices {
     let jsonMetadata = createSemiFungibleMetadata(asset, coverImage, filesURL);
     let jsonURL = await this.umiFactory.umi.uploader.uploadJson(jsonMetadata);
 
-    console.log({ jsonURL });
     return jsonURL;
   }
 

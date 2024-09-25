@@ -42,7 +42,7 @@ export class UserDto {
   readonly accountType: AccountType;
 }
 
-export function createUseDto(
+export function createUserDto(
   user: User & {
     _id: Types.ObjectId;
   },

@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Model } from 'mongoose';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { User } from '../user/schemas/user.schemas';
+import { createUserDto, UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -17,14 +18,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: any): Promise<UserDto> {
     const { id } = payload;
-    const user = await this.userModel.findById(id);
+    const user = await this.userModel
+      .findById(id)
+      .select('_id name email profileImage publicKey accountType');
 
     if (!user) {
       throw new UnauthorizedException('Login first to access this endpoint.');
     }
-
-    return user;
+    return createUserDto(user);
   }
 }
