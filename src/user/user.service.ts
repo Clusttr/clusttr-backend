@@ -76,4 +76,15 @@ export class UserService {
     );
     return benefactor;
   }
+
+  async removeBenefactor(
+    userId: string,
+    benefactorId: string,
+  ): Promise<UserDto> {
+    await this.userModel.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { benefactors: benefactorId } },
+    );
+    return this.getUser(benefactorId);
+  }
 }

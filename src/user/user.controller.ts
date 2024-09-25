@@ -52,14 +52,19 @@ export class UserController {
   @Post('benefactor/:id')
   @ApiOperation({ summary: 'Add beneficiary' })
   async addBenefactor(
-    @Request() req,
-    @Param('id') beneficiaryId: string,
+    @Request() req: { user: UserDto },
+    @Param('id') benefactorId: string,
   ): Promise<UserDto> {
     const userId = req.user.id;
-    return this.userService.addBenefactor(userId, beneficiaryId);
+    return this.userService.addBenefactor(userId, benefactorId);
   }
 
-  @Delete('/beneficiary')
+  @Delete('/benefactor/:id')
   @ApiOperation({ summary: 'Delete beneficiary' })
-  async deleteBenefactor() {}
+  async removeBenefactor(
+    @Request() req: { user: UserDto },
+    @Param('id') benefactorId: string,
+  ): Promise<UserDto> {
+    return this.userService.removeBenefactor(req.user.id, benefactorId);
+  }
 }
