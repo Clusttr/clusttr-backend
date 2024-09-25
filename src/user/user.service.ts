@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AccountType } from 'src/enums/ACCOUNT_TYPE';
@@ -12,6 +13,7 @@ import { UpdateAccountTypeDto } from './dto/updateAccountType.dto';
 import { MetaplexServices } from 'src/service/MetaplexService';
 import { MintResDto } from './dto/mint_res.dto';
 import { CONST } from '../utils/constants';
+import { FindUserQueryDto } from './dto/find_user_query.dto';
 
 @Injectable()
 export class UserService {
@@ -25,6 +27,14 @@ export class UserService {
     let user = await this.userModel
       .findById(id)
       .select('_id name email profileImage publicKey accountType');
+    return createUserDto(user);
+  }
+
+  async findUser(query: FindUserQueryDto): Promise<UserDto> {
+    let user = await this.userModel.findOne({ ...query });
+    if (user === null) {
+      throw new NotFoundException('User not found');
+    }
     return createUserDto(user);
   }
 

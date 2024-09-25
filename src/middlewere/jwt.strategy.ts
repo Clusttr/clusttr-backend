@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     const { id } = payload;
     const user = await this.userModel
       .findById(id)
-      .select('_id name email profileImage publicKey accountType');
+      .select('_id name username email profileImage publicKey accountType');
 
     if (!user) {
       throw new UnauthorizedException('Login first to access this endpoint.');
