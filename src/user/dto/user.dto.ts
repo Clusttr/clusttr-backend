@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { AccountType } from 'src/enums/ACCOUNT_TYPE';
 import { User } from '../schemas/user.schemas';
 import { Types } from 'mongoose';
+import { use } from 'passport';
 
 export class UserDto {
   @ApiProperty({
@@ -15,6 +16,12 @@ export class UserDto {
     example: 'John Doe',
   })
   readonly name: string;
+
+  @ApiProperty({
+    description: 'username',
+    example: 'Johnny',
+  })
+  readonly username: string;
 
   @ApiProperty({
     description: 'email',
@@ -50,6 +57,7 @@ export function createUserDto(
   return {
     id: user._id.toString(),
     name: user.name,
+    username: user.username,
     email: user.email,
     profileImage: user.profileImage,
     publicKey: user.publicKey,
