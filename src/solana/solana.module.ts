@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { Connection, Keypair, clusterApiUrl } from '@solana/web3.js';
 import { generateAccount } from './utils/get-account';
 import { UMIFactory } from './utils/umi';
-import { Umi } from '@metaplex-foundation/umi';
 
 @Global()
 @Module({

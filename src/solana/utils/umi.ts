@@ -9,7 +9,6 @@ import { web3JsRpc } from '@metaplex-foundation/umi-rpc-web3js';
 import { fetchHttp } from '@metaplex-foundation/umi-http-fetch';
 import { mplCandyMachine } from '@metaplex-foundation/mpl-candy-machine';
 import { Keypair } from '@solana/web3.js';
-import { createBundlrUploader } from '@metaplex-foundation/umi-uploader-bundlr';
 import { createIrysUploader } from '@metaplex-foundation/umi-uploader-irys';
 
 const heliusEndpoint = 'https://devnet.helius-rpc.com/';

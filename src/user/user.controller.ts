@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Request,
   UseGuards,
@@ -10,7 +12,7 @@ import { ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
 import { UpdateAccountTypeDto } from './dto/updateAccountType.dto';
 import { UserService } from './user.service';
-import { UserDto, createUseDto } from './dto/user.dto';
+import { createUserDto, UserDto } from './dto/user.dto';
 import { MintResDto } from './dto/mint_res.dto';
 
 @Controller('user')
@@ -20,9 +22,8 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: 'Get user' })
-  async getUser(@Request() req) {
-    const user = req.user;
-    return createUseDto(user);
+  async getUser(@Request() req: { user: UserDto }): Promise<UserDto> {
+    return req.user;
   }
 
   @Post('/updateAccountType')
@@ -40,4 +41,15 @@ export class UserController {
     const user = req.user;
     return this.userService.airdrop(user);
   }
+
+  @Post('benefactor/:id')
+  @ApiOperation({ summary: 'Add beneficiary' })
+  async addBenefactor(@Request() req, @Param('id') beneficiaryId: string) {
+    const userId = req.user.id;
+    return this.userService.addBenefactor(userId, beneficiaryId);
+  }
+
+  @Delete('/beneficiary')
+  @ApiOperation({ summary: 'Delete beneficiary' })
+  async deleteBenefactor() {}
 }
