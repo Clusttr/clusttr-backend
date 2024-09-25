@@ -78,6 +78,9 @@ export class UserService {
   }
 
   async addBenefactor(userId: string, benefactorId: string): Promise<UserDto> {
+    let user = await this.userModel.findById(userId).select('benefactors');
+    if (user.benefactors.includes(benefactorId))
+      throw new BadRequestException('User is already a benefactor');
     let benefactor = await this.getUser(benefactorId);
     await this.userModel.findOneAndUpdate(
       { _id: userId },
