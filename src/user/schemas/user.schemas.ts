@@ -40,13 +40,6 @@ export class User {
 
   @Prop({
     type: () => [String],
-    validate: {
-      validator: function (array: string[]) {
-        const uniqueSet = new Set(array);
-        return uniqueSet.size === array.length;
-      },
-      message: 'Benefactors must contain unique values',
-    },
   })
   benefactors: string[];
 }
