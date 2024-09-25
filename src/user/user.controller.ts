@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -12,8 +13,9 @@ import { ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
 import { UpdateAccountTypeDto } from './dto/updateAccountType.dto';
 import { UserService } from './user.service';
-import { createUserDto, UserDto } from './dto/user.dto';
+import { UserDto } from './dto/user.dto';
 import { MintResDto } from './dto/mint_res.dto';
+import { FindUserQueryDto } from './dto/find_user_query.dto';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -24,6 +26,12 @@ export class UserController {
   @ApiOperation({ summary: 'Get user' })
   async getUser(@Request() req: { user: UserDto }): Promise<UserDto> {
     return req.user;
+  }
+
+  @Get('/find')
+  @ApiOperation({ summary: 'search user' })
+  async findUser(@Query() query: FindUserQueryDto): Promise<UserDto> {
+    return this.userService.findUser(query);
   }
 
   @Post('/updateAccountType')
