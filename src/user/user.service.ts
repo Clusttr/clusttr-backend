@@ -26,7 +26,7 @@ export class UserService {
   async getUser(id: string): Promise<UserDto> {
     let user = await this.userModel
       .findById(id)
-      .select('_id name email profileImage publicKey accountType');
+      .select('_id name username email profileImage publicKey accountType');
     return createUserDto(user);
   }
 
@@ -79,8 +79,10 @@ export class UserService {
 
   async addBenefactor(userId: string, benefactorId: string): Promise<UserDto> {
     let user = await this.userModel.findById(userId).select('benefactors');
+
     if (user.benefactors.includes(benefactorId))
       throw new BadRequestException('User is already a benefactor');
+
     let benefactor = await this.getUser(benefactorId);
     await this.userModel.findOneAndUpdate(
       { _id: userId },
