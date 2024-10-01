@@ -14,6 +14,8 @@ import { MetaplexServices } from 'src/service/MetaplexService';
 import { MintResDto } from './dto/mint_res.dto';
 import { CONST } from '../utils/constants';
 import { FindUserQueryDto } from './dto/find_user_query.dto';
+import { ChangePinDto } from './dto/change_pin.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -60,6 +62,21 @@ export class UserService {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  async changePin(id: String, changePin: ChangePinDto) {
+    if (changePin.oldPin === changePin.newPin) {
+      throw new BadRequestException("Can't change pin to old pin");
+    }
+
+    const user = await this.userModel.findById(id);
+    const hashedNewPin = await bcrypt.hash(changePin.newPin, 10);
+
+    const isPasswordMatched = await bcrypt.compare(changePin.oldPin, user.pin);
+    if (!isPasswordMatched) {
+      throw new BadRequestException("Can't continue operation, wrong pin");
+    }
+    await this.userModel.updateOne({ _id: id }, { pin: hashedNewPin });
   }
 
   async airdrop(user: User): Promise<MintResDto> {
