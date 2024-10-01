@@ -16,6 +16,7 @@ import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto';
 import { MintResDto } from './dto/mint_res.dto';
 import { FindUserQueryDto } from './dto/find_user_query.dto';
+import { ChangePinDto } from './dto/change_pin.dto';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -41,6 +42,15 @@ export class UserController {
     @Body() updateValue: UpdateAccountTypeDto,
   ): Promise<UserDto> {
     return this.userService.updateUserRole(updateValue);
+  }
+
+  @Post('/pin')
+  @ApiOperation({ summary: 'Change Pin' })
+  async changePin(
+    @Request() req: { user: UserDto },
+    @Body() changePin: ChangePinDto,
+  ) {
+    return this.userService.changePin(req.user.id, changePin);
   }
 
   @Post('/airdrop')
