@@ -49,7 +49,7 @@ export class UserController {
   async changePin(
     @Request() req: { user: UserDto },
     @Body() changePin: ChangePinDto,
-  ) {
+  ): Promise<UserDto> {
     return this.userService.changePin(req.user.id, changePin);
   }
 
