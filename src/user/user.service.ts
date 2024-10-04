@@ -64,7 +64,7 @@ export class UserService {
     }
   }
 
-  async changePin(id: String, changePin: ChangePinDto) {
+  async changePin(id: String, changePin: ChangePinDto): Promise<UserDto> {
     if (changePin.oldPin === changePin.newPin) {
       throw new BadRequestException("Can't change pin to old pin");
     }
@@ -77,6 +77,7 @@ export class UserService {
       throw new BadRequestException("Can't continue operation, wrong pin");
     }
     await this.userModel.updateOne({ _id: id }, { pin: hashedNewPin });
+    return createUserDto(user);
   }
 
   async airdrop(user: User): Promise<MintResDto> {
