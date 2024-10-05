@@ -9,11 +9,19 @@ import { BankAccountReqDto } from './dto/bankAccountReq.dto';
 @UseGuards(JwtAuthGuard)
 export class BankController {
   constructor(private readonly bankAccountService: BankService) {}
+
   @Get()
   async getAccountDetails(
     @Request() req: { user: UserDto },
     @Body() reqDto: BankAccountReqDto,
   ): Promise<BankAccountResDto> {
     return this.bankAccountService.getAccountDetails(req.user, reqDto);
+  }
+
+  @Get()
+  async getBankAccounts(
+    @Request() req: { user: UserDto },
+  ): Promise<BankAccountResDto[]> {
+    return this.bankAccountService.getBankAccounts(req.user.id);
   }
 }
