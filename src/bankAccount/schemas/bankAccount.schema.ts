@@ -1,10 +1,9 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { AccountType } from 'src/enums/ACCOUNT_TYPE';
+import { Prop, Schema } from '@nestjs/mongoose';
 
 @Schema({
   timestamps: true,
 })
-export class BankAccountSchema {
+export class BankAccount {
   @Prop()
   bank: string;
 
