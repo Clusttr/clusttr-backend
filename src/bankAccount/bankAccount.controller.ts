@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Post,
   Request,
@@ -39,5 +40,13 @@ export class BankController {
     reqDto: AddBankAccountReqDto,
   ): Promise<BankAccountResDto> {
     return this.bankAccountService.addAccount(req.user.id, reqDto);
+  }
+
+  @Delete()
+  async deleteBankAccount(
+    @Request() req: { user: UserDto },
+    reqDto: AddBankAccountReqDto,
+  ): Promise<BankAccountResDto> {
+    return this.bankAccountService.deleteAccount(req.user.id, reqDto);
   }
 }
