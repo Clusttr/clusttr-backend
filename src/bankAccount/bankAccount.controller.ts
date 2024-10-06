@@ -19,7 +19,7 @@ import { AddBankAccountReqDto } from './dto/addBankAccountReq.dto';
 export class BankController {
   constructor(private readonly bankAccountService: BankService) {}
 
-  @Get()
+  @Get('/details')
   async getAccountDetails(
     @Request() req: { user: UserDto },
     @Body() reqDto: BankAccountReqDto,
@@ -37,7 +37,7 @@ export class BankController {
   @Post()
   async addBankAccount(
     @Request() req: { user: UserDto },
-    reqDto: AddBankAccountReqDto,
+    @Body() reqDto: AddBankAccountReqDto,
   ): Promise<BankAccountResDto> {
     return this.bankAccountService.addAccount(req.user.id, reqDto);
   }
@@ -45,7 +45,7 @@ export class BankController {
   @Delete()
   async deleteBankAccount(
     @Request() req: { user: UserDto },
-    reqDto: AddBankAccountReqDto,
+    @Body() reqDto: BankAccountReqDto,
   ): Promise<BankAccountResDto> {
     return this.bankAccountService.deleteAccount(req.user.id, reqDto);
   }

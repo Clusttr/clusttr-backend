@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { BankAccountSchema } from 'src/bankAccount/schemas/bankAccount.schema';
+import { BankAccount } from 'src/bankAccount/schemas/bankAccount.schema';
 import { AccountType } from 'src/enums/ACCOUNT_TYPE';
 
 @Schema({
@@ -45,9 +45,9 @@ export class User {
   benefactors: string[];
 
   @Prop({
-    type: () => [BankAccountSchema],
+    type: () => [BankAccount],
   })
-  bankAccounts: [BankAccountSchema];
+  bankAccounts: BankAccount[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

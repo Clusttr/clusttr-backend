@@ -25,8 +25,9 @@ export class BankService {
   }
 
   async getBankAccounts(userId: String): Promise<BankAccountResDto[]> {
-    let user = this.userModel.findById(userId).select('bankAccounts');
-    let bankAccounts = (await user).bankAccounts;
+    let user = await this.userModel.findById(userId).select('bankAccounts');
+    let bankAccounts = (user.bankAccounts ??= new Array<BankAccount>());
+    console.log({ bankAccounts });
     let accounts = bankAccounts.map((x) => {
       return {
         bank: x.bank,
@@ -43,7 +44,10 @@ export class BankService {
   ): Promise<BankAccountResDto> {
     //check if bank account already exist
     let user = await this.userModel.findById(userId).select('bankAccounts');
-    let accountExists = user.bankAccounts.find(
+    let bankAccounts: BankAccount[] = (user.bankAccounts ??=
+      new Array<BankAccount>());
+
+    let accountExists = bankAccounts.find(
       (x) => x.accountNumber == req.accountNumber && x.bank == req.bank,
     );
     if (accountExists)
@@ -68,5 +72,30 @@ export class BankService {
     };
   }
 
-  deleteAccount() {}
+  async deleteAccount(
+    userId: String,
+    req: BankAccountReqDto,
+  ): Promise<BankAccountResDto> {
+    //check if bank account already exist
+    let user = await this.userModel.findById(userId).select('bankAccounts');
+    let bankAccount = user.bankAccounts.find(
+      (x) => x.accountNumber == req.accountNumber && x.bank == req.bank,
+    );
+    if (!bankAccount) throw new BadRequestException('Bank account not found.');
+
+    await this.userModel.updateOne(
+      {
+        _id: userId,
+      },
+      {
+        $pull: { bankAccounts: bankAccount },
+      },
+    );
+
+    return {
+      bank: bankAccount.bank,
+      accountName: bankAccount.accountName,
+      accountNumber: bankAccount.accountNumber,
+    };
+  }
 }
