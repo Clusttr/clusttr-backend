@@ -7,6 +7,8 @@ import { BankAccountReqDto } from './dto/bankAccountReq.dto';
 import { BankAccountResDto } from './dto/bankAccountRes.dto';
 import { AddBankAccountReqDto } from './dto/addBankAccountReq.dto';
 import { BankAccount } from './schemas/bankAccount.schema';
+import * as bcrypt from 'bcryptjs';
+import { DeleteBankAccountReqDto } from './dto/deleteBankAccountReq.dto';
 
 @Injectable()
 export class BankService {
@@ -42,8 +44,14 @@ export class BankService {
     userId: String,
     req: AddBankAccountReqDto,
   ): Promise<BankAccountResDto> {
+    let user = await this.userModel.findById(userId).select('bankAccounts pin');
+
+    //verify pin
+    const isPasswordMatched = await bcrypt.compare(req.pin, user.pin);
+    if (!isPasswordMatched)
+      throw new BadRequestException("Can't continue operation, wrong pin");
+
     //check if bank account already exist
-    let user = await this.userModel.findById(userId).select('bankAccounts');
     let bankAccounts: BankAccount[] = (user.bankAccounts ??=
       new Array<BankAccount>());
 
@@ -74,10 +82,16 @@ export class BankService {
 
   async deleteAccount(
     userId: String,
-    req: BankAccountReqDto,
+    req: DeleteBankAccountReqDto,
   ): Promise<BankAccountResDto> {
+    let user = await this.userModel.findById(userId).select('bankAccounts pin');
+
+    //verify pin
+    const isPasswordMatched = await bcrypt.compare(req.pin, user.pin);
+    if (!isPasswordMatched)
+      throw new BadRequestException("Can't continue operation, wrong pin");
+
     //check if bank account already exist
-    let user = await this.userModel.findById(userId).select('bankAccounts');
     let bankAccount = user.bankAccounts.find(
       (x) => x.accountNumber == req.accountNumber && x.bank == req.bank,
     );

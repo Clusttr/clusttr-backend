@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class AddBankAccountReqDto {
+export class DeleteBankAccountReqDto {
   @IsNotEmpty()
   @IsString()
   bank: string;
@@ -8,10 +8,6 @@ export class AddBankAccountReqDto {
   @IsNotEmpty()
   @IsString()
   accountNumber: string;
-
-  @IsNotEmpty()
-  @IsString()
-  accountName: string;
 
   @IsNotEmpty()
   @IsString()

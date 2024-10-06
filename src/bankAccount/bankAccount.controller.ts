@@ -13,6 +13,7 @@ import { BankService } from './bankAccount.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { BankAccountReqDto } from './dto/bankAccountReq.dto';
 import { AddBankAccountReqDto } from './dto/addBankAccountReq.dto';
+import { DeleteBankAccountReqDto } from './dto/deleteBankAccountReq.dto';
 
 @Controller('bank')
 @UseGuards(JwtAuthGuard)
@@ -45,7 +46,7 @@ export class BankController {
   @Delete()
   async deleteBankAccount(
     @Request() req: { user: UserDto },
-    @Body() reqDto: BankAccountReqDto,
+    @Body() reqDto: DeleteBankAccountReqDto,
   ): Promise<BankAccountResDto> {
     return this.bankAccountService.deleteAccount(req.user.id, reqDto);
   }
