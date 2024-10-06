@@ -25,6 +25,9 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 import { MintModule } from './mint/mint.module';
 import { MintController } from './mint/mint.controller';
 import { MintService } from './mint/mint.service';
+import { BankService } from './bankAccount/bankAccount.service';
+import { BankController } from './bankAccount/bankAccount.controller';
+import { BankModule } from './bankAccount/bankAccount.module';
 
 @Module({
   imports: [
@@ -49,6 +52,7 @@ import { MintService } from './mint/mint.service';
     BookmarkModule,
     MintModule,
     ServiceModule,
+    BankModule,
   ],
   controllers: [
     AppController,
@@ -57,6 +61,7 @@ import { MintService } from './mint/mint.service';
     UserController,
     BookmarkController,
     MintController,
+    BankController,
   ],
   providers: [
     AppService,
@@ -64,6 +69,7 @@ import { MintService } from './mint/mint.service';
     UserService,
     BookmarkService,
     MintService,
+    BankService,
   ],
 })
 export class AppModule {
