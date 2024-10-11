@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -23,7 +24,7 @@ export class BankController {
   @Get('/details')
   async getAccountDetails(
     @Request() req: { user: UserDto },
-    @Body() reqDto: BankAccountReqDto,
+    @Query() reqDto: BankAccountReqDto,
   ): Promise<BankAccountResDto> {
     return this.bankAccountService.getAccountDetails(req.user, reqDto);
   }
