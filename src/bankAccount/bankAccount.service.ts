@@ -29,7 +29,6 @@ export class BankService {
   async getBankAccounts(userId: String): Promise<BankAccountResDto[]> {
     let user = await this.userModel.findById(userId).select('bankAccounts');
     let bankAccounts = (user.bankAccounts ??= new Array<BankAccount>());
-    console.log({ bankAccounts });
     let accounts = bankAccounts.map((x) => {
       return {
         bank: x.bank,
@@ -89,7 +88,7 @@ export class BankService {
     //verify pin
     const isPasswordMatched = await bcrypt.compare(req.pin, user.pin);
     if (!isPasswordMatched)
-      throw new BadRequestException("Can't continue operation, wrong pin");
+      throw new BadRequestException(["Can't continue operation, wrong pin"]);
 
     //check if bank account already exist
     let bankAccount = user.bankAccounts.find(
