@@ -5,6 +5,7 @@ import { CloudinaryService } from './media_manager/CloudinaryService';
 import { MetaplexServices } from './MetaplexService';
 import { UMIFactory } from 'src/solana/utils/umi';
 import { SolanaModule } from 'src/solana/solana.module';
+import { ScalexServices } from './ramps/ScalexServices';
 
 @Module({
   imports: [SolanaModule],
@@ -28,7 +29,15 @@ import { SolanaModule } from 'src/solana/solana.module';
       },
     },
     MetaplexServices,
+    {
+      provide: ScalexServices,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const scalexPrivateKey = config.get<string>('SCALEX_PRIVATE_KEY');
+        return new ScalexServices(scalexPrivateKey);
+      },
+    },
   ],
-  exports: [HeliusService, CloudinaryService, MetaplexServices],
+  exports: [HeliusService, CloudinaryService, MetaplexServices, ScalexServices],
 })
 export class ServiceModule {}

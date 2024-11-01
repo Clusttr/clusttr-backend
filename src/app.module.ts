@@ -28,6 +28,7 @@ import { MintService } from './mint/mint.service';
 import { BankService } from './bankAccount/bankAccount.service';
 import { BankController } from './bankAccount/bankAccount.controller';
 import { BankModule } from './bankAccount/bankAccount.module';
+import { BankSchema } from './bankAccount/schemas/bank.schema';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { BankModule } from './bankAccount/bankAccount.module';
     AssetModule,
     UserModule,
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: 'Bank', schema: BankSchema }]),
     MongooseModule.forFeature([
       { name: 'UploadAsset', schema: UploadAssetSchema },
     ]),

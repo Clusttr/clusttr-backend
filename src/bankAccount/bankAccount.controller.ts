@@ -15,6 +15,9 @@ import { UserDto } from 'src/user/dto/user.dto';
 import { BankAccountReqDto } from './dto/bankAccountReq.dto';
 import { AddBankAccountReqDto } from './dto/addBankAccountReq.dto';
 import { DeleteBankAccountReqDto } from './dto/deleteBankAccountReq.dto';
+import { BankResDto } from './dto/BankRes.dto';
+import { UpdateBanksResDto } from './dto/updateBanksRes.dto';
+import { BankQueryDto } from './dto/BankQuery.dto';
 
 @Controller('bank')
 @UseGuards(JwtAuthGuard)
@@ -50,5 +53,16 @@ export class BankController {
     @Body() reqDto: DeleteBankAccountReqDto,
   ): Promise<BankAccountResDto> {
     return this.bankAccountService.deleteAccount(req.user.id, reqDto);
+  }
+
+  //bank service
+  @Get('/banks')
+  async getBanks(@Query() query: BankQueryDto): Promise<Array<BankResDto>> {
+    return this.bankAccountService.fetchBanks(query);
+  }
+
+  @Post('/banks/update')
+  async updateBanks(): Promise<UpdateBanksResDto> {
+    return this.bankAccountService.updateBanks();
   }
 }
