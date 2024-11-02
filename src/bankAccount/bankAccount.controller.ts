@@ -17,6 +17,8 @@ import { BankAccountReqDto } from './dto/bankAccountReq.dto';
 import { AddBankAccountReqDto } from './dto/addBankAccountReq.dto';
 import { DeleteBankAccountReqDto } from './dto/deleteBankAccountReq.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { BankAccountDetailsResDto } from './dto/bank-account-details-res.dto';
+import { BankAccountDetailsReqDto } from './dto/bank-account-details-req.dto';
 
 @ApiTags('Bank Account')
 @Controller('bank-account')
@@ -54,5 +56,15 @@ export class BankAccountController {
     @Body() reqDto: DeleteBankAccountReqDto,
   ): Promise<boolean> {
     return this.bankAccountService.remove(req.user.id, reqDto);
+  }
+
+  @Post('/details')
+  async getAccountDetails(
+    @Body() req: BankAccountDetailsReqDto,
+  ): Promise<BankAccountDetailsResDto> {
+    return await this.bankAccountService.getAccountDetails(
+      req.accountNumber,
+      req.bankCode,
+    );
   }
 }

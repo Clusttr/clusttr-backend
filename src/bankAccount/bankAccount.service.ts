@@ -14,12 +14,15 @@ import { BankAccount } from './schemas/bankAccount.schema';
 import * as bcrypt from 'bcryptjs';
 import { DeleteBankAccountReqDto } from './dto/deleteBankAccountReq.dto';
 import { Bank } from '../bank/schema/bank.schema';
+import { ScalexServices } from 'src/service/ramps/ScalexServices';
+import { BankAccountDetailsResDto } from './dto/bank-account-details-res.dto';
 
 @Injectable()
 export class BankAccountService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Bank.name) private bankModel: Model<Bank>,
+    private readonly scalexService: ScalexServices,
   ) {}
 
   async findOne(
@@ -65,6 +68,17 @@ export class BankAccountService {
     }
 
     return userResult.bankAccounts.map((x) => BankAccountResDto.create(x));
+  }
+
+  async getAccountDetails(
+    accountNumber: string,
+    bankCode: string,
+  ): Promise<BankAccountDetailsResDto> {
+    const result = await this.scalexService.getAccountDetails(
+      accountNumber,
+      bankCode,
+    );
+    return BankAccountDetailsResDto.init(result);
   }
 
   async add(
