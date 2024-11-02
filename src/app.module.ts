@@ -25,9 +25,13 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 import { MintModule } from './mint/mint.module';
 import { MintController } from './mint/mint.controller';
 import { MintService } from './mint/mint.service';
-import { BankService } from './bankAccount/bankAccount.service';
-import { BankController } from './bankAccount/bankAccount.controller';
-import { BankModule } from './bankAccount/bankAccount.module';
+import { BankAccountService } from './bankAccount/bankAccount.service';
+import { BankAccountController } from './bankAccount/bankAccount.controller';
+import { BankAccountModule } from './bankAccount/bankAccount.module';
+import { BankSchema } from './bank/schema/bank.schema';
+import { BankModule } from './bank/bank.module';
+import { BankController } from './bank/bank.controller';
+import { BankService } from './bank/bank.service';
 
 @Module({
   imports: [
@@ -44,6 +48,7 @@ import { BankModule } from './bankAccount/bankAccount.module';
     AssetModule,
     UserModule,
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: 'Bank', schema: BankSchema }]),
     MongooseModule.forFeature([
       { name: 'UploadAsset', schema: UploadAssetSchema },
     ]),
@@ -52,6 +57,7 @@ import { BankModule } from './bankAccount/bankAccount.module';
     BookmarkModule,
     MintModule,
     ServiceModule,
+    BankAccountModule,
     BankModule,
   ],
   controllers: [
@@ -61,6 +67,7 @@ import { BankModule } from './bankAccount/bankAccount.module';
     UserController,
     BookmarkController,
     MintController,
+    BankAccountController,
     BankController,
   ],
   providers: [
@@ -69,6 +76,7 @@ import { BankModule } from './bankAccount/bankAccount.module';
     UserService,
     BookmarkService,
     MintService,
+    BankAccountService,
     BankService,
   ],
 })

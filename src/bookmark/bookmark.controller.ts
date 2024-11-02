@@ -8,10 +8,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BookmarkService } from './bookmark.service';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { createUserDto } from 'src/user/dto/user.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
 
+@ApiTags('Bookmark')
 @Controller('bookmark')
 @UseGuards(JwtAuthGuard)
 export class BookmarkController {
