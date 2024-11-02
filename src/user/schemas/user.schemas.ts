@@ -46,6 +46,7 @@ export class User {
 
   @Prop({
     type: () => [BankAccount],
+    _id: false,
   })
   bankAccounts: BankAccount[];
 }

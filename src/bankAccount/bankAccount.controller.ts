@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Query,
   Request,
@@ -10,59 +11,48 @@ import {
 } from '@nestjs/common';
 import { BankAccountResDto } from './dto/bankAccountRes.dto';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
-import { BankService } from './bankAccount.service';
+import { BankAccountService } from './bankAccount.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { BankAccountReqDto } from './dto/bankAccountReq.dto';
 import { AddBankAccountReqDto } from './dto/addBankAccountReq.dto';
 import { DeleteBankAccountReqDto } from './dto/deleteBankAccountReq.dto';
-import { BankResDto } from './dto/BankRes.dto';
-import { UpdateBanksResDto } from './dto/updateBanksRes.dto';
-import { BankQueryDto } from './dto/BankQuery.dto';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('bank')
+@ApiTags('Bank Account')
+@Controller('bank-account')
 @UseGuards(JwtAuthGuard)
-export class BankController {
-  constructor(private readonly bankAccountService: BankService) {}
+export class BankAccountController {
+  constructor(private readonly bankAccountService: BankAccountService) {}
 
-  @Get('/details')
-  async getAccountDetails(
+  @Get('/:accountNumber')
+  async find(
     @Request() req: { user: UserDto },
-    @Query() reqDto: BankAccountReqDto,
+    @Param('accountNumber') accountNumber: string,
   ): Promise<BankAccountResDto> {
-    return this.bankAccountService.getAccountDetails(req.user, reqDto);
+    console.log({ accountNumber, id: req.user.id });
+    return this.bankAccountService.findOne(req.user.id, accountNumber);
   }
 
   @Get()
-  async getBankAccounts(
+  async findAll(
     @Request() req: { user: UserDto },
   ): Promise<BankAccountResDto[]> {
-    return this.bankAccountService.getBankAccounts(req.user.id);
+    return this.bankAccountService.findAll(req.user.id);
   }
 
   @Post()
-  async addBankAccount(
+  async add(
     @Request() req: { user: UserDto },
     @Body() reqDto: AddBankAccountReqDto,
   ): Promise<BankAccountResDto> {
-    return this.bankAccountService.addAccount(req.user.id, reqDto);
+    return this.bankAccountService.add(req.user.id, reqDto);
   }
 
   @Delete()
-  async deleteBankAccount(
+  async remove(
     @Request() req: { user: UserDto },
     @Body() reqDto: DeleteBankAccountReqDto,
-  ): Promise<BankAccountResDto> {
-    return this.bankAccountService.deleteAccount(req.user.id, reqDto);
-  }
-
-  //bank service
-  @Get('/banks')
-  async getBanks(@Query() query: BankQueryDto): Promise<Array<BankResDto>> {
-    return this.bankAccountService.fetchBanks(query);
-  }
-
-  @Post('/banks/update')
-  async updateBanks(): Promise<UpdateBanksResDto> {
-    return this.bankAccountService.updateBanks();
+  ): Promise<boolean> {
+    return this.bankAccountService.remove(req.user.id, reqDto);
   }
 }
