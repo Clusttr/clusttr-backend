@@ -9,7 +9,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
 import { UpdateAccountTypeDto } from './dto/updateAccountType.dto';
 import { UserService } from './user.service';
@@ -18,6 +18,7 @@ import { MintResDto } from './dto/mint_res.dto';
 import { FindUserQueryDto } from './dto/find_user_query.dto';
 import { ChangePinDto } from './dto/change_pin.dto';
 
+@ApiTags('User')
 @Controller('user')
 @UseGuards(JwtAuthGuard)
 export class UserController {
