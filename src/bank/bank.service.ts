@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UpdateBanksResDto } from './dto/update-banks-res.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { TokenExchangeRateRes } from './dto/token-exchange-rate-res.dto';
 
 @Injectable()
 export class BankService {
@@ -61,5 +62,13 @@ export class BankService {
   async remove(id: string): Promise<Boolean> {
     let result = await this.bankModel.deleteOne({ _id: id });
     return true;
+  }
+
+  async getRate(
+    token: string,
+    currency: string,
+  ): Promise<TokenExchangeRateRes> {
+    let res = await this.scalexService.getExchangeRate(token, currency);
+    return TokenExchangeRateRes.init(res, currency);
   }
 }
