@@ -8,6 +8,7 @@ import {
   Delete,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { KycService } from './kyc.service';
 import { CreateKycDto } from './dto/create-kyc.dto';
@@ -15,6 +16,7 @@ import { UpdateKycDto } from './dto/update-kyc.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/middlewere/jwt.guard';
+import { QueryKycDto } from './dto/query-kyc.dto';
 
 @ApiTags('KYC')
 @Controller('kyc')
@@ -31,8 +33,8 @@ export class KycController {
   }
 
   @Get()
-  findAll() {
-    return this.kycService.findAll();
+  findAll(@Query() query: QueryKycDto) {
+    return this.kycService.findAll(query);
   }
 
   @Get(':id')

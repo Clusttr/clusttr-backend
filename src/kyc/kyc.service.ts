@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { KycDto } from './dto/kyc.dto';
 import { User } from 'src/user/schemas/user.schemas';
+import { QueryKycDto } from './dto/query-kyc.dto';
 
 @Injectable()
 export class KycService {
@@ -21,8 +22,20 @@ export class KycService {
     return KycDto.init(res._id.toString(), res);
   }
 
-  async findAll(): Promise<Array<KycDto>> {
-    let res = await this.kycModel.find();
+  async findAll(query: QueryKycDto): Promise<Array<KycDto>> {
+    const size = +query.size;
+    const page = +query.page;
+
+    const idNumber = new RegExp(query.idNumber, 'i');
+    const idType = new RegExp(query.idType, 'i');
+    const firstname = new RegExp(query.firstname, 'i');
+    const lastname = new RegExp(query.lastname, 'i');
+    const email = new RegExp(query.email, 'i');
+    const phone = new RegExp(query.phone, 'i');
+    let res = await this.kycModel
+      .find({ idNumber, idType, firstname, lastname, email, phone })
+      .limit(size)
+      .skip((page - 1) * size);
     return res.map((x) => KycDto.init(x._id.toString(), x));
   }
 
