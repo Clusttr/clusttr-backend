@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 import { BankAccount } from 'src/bankAccount/schemas/bankAccount.schema';
 import { AccountType } from 'src/enums/ACCOUNT_TYPE';
 
@@ -49,6 +50,11 @@ export class User {
     _id: false,
   })
   bankAccounts: BankAccount[];
+
+  @Prop({
+    type: Types.ObjectId,
+  })
+  kyc: Types.ObjectId;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

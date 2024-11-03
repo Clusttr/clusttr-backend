@@ -32,6 +32,10 @@ import { BankSchema } from './bank/schema/bank.schema';
 import { BankModule } from './bank/bank.module';
 import { BankController } from './bank/bank.controller';
 import { BankService } from './bank/bank.service';
+import { KycModule } from './kyc/kyc.module';
+import { KycSchema } from './kyc/schemas/kyc.schema';
+import { KycService } from './kyc/kyc.service';
+import { KycController } from './kyc/kyc.controller';
 
 @Module({
   imports: [
@@ -52,6 +56,7 @@ import { BankService } from './bank/bank.service';
     MongooseModule.forFeature([
       { name: 'UploadAsset', schema: UploadAssetSchema },
     ]),
+    MongooseModule.forFeature([{ name: 'Kyc', schema: KycSchema }]),
     TokenModule,
     DowntownModule,
     BookmarkModule,
@@ -59,6 +64,7 @@ import { BankService } from './bank/bank.service';
     ServiceModule,
     BankAccountModule,
     BankModule,
+    KycModule,
   ],
   controllers: [
     AppController,
@@ -69,6 +75,7 @@ import { BankService } from './bank/bank.service';
     MintController,
     BankAccountController,
     BankController,
+    KycController,
   ],
   providers: [
     AppService,
@@ -78,6 +85,7 @@ import { BankService } from './bank/bank.service';
     MintService,
     BankAccountService,
     BankService,
+    KycService,
   ],
 })
 export class AppModule {

@@ -2,6 +2,7 @@ import { ServiceUnavailableException } from '@nestjs/common';
 import { ScalexResDto } from './dto/ScalexRes.dto';
 import { ScalexBankResDto } from './dto/ScalexBankRes.dto';
 import { ScalexAccountDetailsResDto } from './dto/scalex-account-details-res.dto';
+import { ScalexExchangeRateResDto } from './dto/scalex-exchange-rate-res.dto';
 
 export class ScalexServices {
   constructor(private scalexPrivateKey: string) {}
@@ -68,6 +69,34 @@ export class ScalexServices {
       );
 
     const jsonData: ScalexResDto<ScalexAccountDetailsResDto> = await res.json();
+    return jsonData.data;
+  }
+
+  async getExchangeRate(
+    token: string,
+    currency: string,
+  ): Promise<ScalexExchangeRateResDto> {
+    const headers = new Headers();
+    headers.append('Authorization', `Bearer ${this.scalexPrivateKey}`);
+
+    const requestOptions = {
+      method: 'GET',
+      headers: headers,
+      redirct: 'follow',
+    };
+
+    const res = await fetch(
+      `${ScalexServices.BASE_URL}/business/rates?token=${token}&network=BEP20&currency=${currency}`,
+      requestOptions,
+    );
+
+    if (!res.ok) {
+      throw new ServiceUnavailableException(
+        'Failed to get banks at the moment',
+      );
+    }
+
+    const jsonData: ScalexResDto<ScalexExchangeRateResDto> = await res.json();
     return jsonData.data;
   }
 }
