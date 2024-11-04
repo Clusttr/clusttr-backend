@@ -15,5 +15,5 @@ export class ScalexResDto<T> {
 
   @IsNotEmpty()
   @IsString()
-  data: T;
+  data?: T;
 }

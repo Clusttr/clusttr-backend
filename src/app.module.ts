@@ -36,6 +36,9 @@ import { KycModule } from './kyc/kyc.module';
 import { KycSchema } from './kyc/schemas/kyc.schema';
 import { KycService } from './kyc/kyc.service';
 import { KycController } from './kyc/kyc.controller';
+import { RampController } from './ramp/ramp.controller';
+import { RampModule } from './ramp/ramp.module';
+import { RampService } from './ramp/ramp.service';
 
 @Module({
   imports: [
@@ -65,6 +68,7 @@ import { KycController } from './kyc/kyc.controller';
     BankAccountModule,
     BankModule,
     KycModule,
+    RampModule,
   ],
   controllers: [
     AppController,
@@ -76,6 +80,7 @@ import { KycController } from './kyc/kyc.controller';
     BankAccountController,
     BankController,
     KycController,
+    RampController,
   ],
   providers: [
     AppService,
@@ -86,6 +91,7 @@ import { KycController } from './kyc/kyc.controller';
     BankAccountService,
     BankService,
     KycService,
+    RampService,
   ],
 })
 export class AppModule {
