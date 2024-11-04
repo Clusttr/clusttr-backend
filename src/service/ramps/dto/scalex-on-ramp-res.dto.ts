@@ -32,7 +32,7 @@ export class ScalexOnRampResDto {
   @IsNumber()
   fee: number;
 
-  feeInDetail: FeeInDetail;
+  fee_in_detail: FeeInDetail;
 
   @IsNumber()
   rate: number;

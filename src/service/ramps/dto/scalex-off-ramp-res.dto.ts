@@ -52,5 +52,5 @@ export class ScalexOffRampResDto {
   fee: number;
 
   @IsNotEmpty()
-  feeInDetail: FeeInDetail;
+  fee_in_detail: FeeInDetail;
 }
