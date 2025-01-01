@@ -3,6 +3,10 @@ import { ScalexResDto } from './dto/ScalexRes.dto';
 import { ScalexBankResDto } from './dto/ScalexBankRes.dto';
 import { ScalexAccountDetailsResDto } from './dto/scalex-account-details-res.dto';
 import { ScalexExchangeRateResDto } from './dto/scalex-exchange-rate-res.dto';
+import { ScalexOffRampResDto } from './dto/scalex-off-ramp-res.dto';
+import { ScalexOffRampReqDto } from './dto/scalex-off-ramp-req.dto';
+import { ScalexOnRampReqDto } from './dto/scalex-on-ramp-req.dto';
+import { ScalexOnRampResDto } from './dto/scalex-on-ramp-res.dto';
 
 export class ScalexServices {
   constructor(private scalexPrivateKey: string) {}
@@ -97,6 +101,55 @@ export class ScalexServices {
     }
 
     const jsonData: ScalexResDto<ScalexExchangeRateResDto> = await res.json();
+    return jsonData.data;
+  }
+
+  async offRamp(req: ScalexOffRampReqDto): Promise<ScalexOffRampResDto> {
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', `Bearer ${this.scalexPrivateKey}`);
+
+    const raw = JSON.stringify(req);
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirct: 'follow',
+    };
+
+    const res = await fetch(
+      `${ScalexServices.BASE_URL}/business/tx/offramp`,
+      requestOptions,
+    );
+
+    const jsonData: ScalexResDto<ScalexOffRampResDto> = await res.json();
+    if (!res.ok) throw new ServiceUnavailableException(jsonData.message);
+    return jsonData.data;
+  }
+
+  async onRamp(req: ScalexOnRampReqDto): Promise<ScalexOnRampResDto> {
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', `Bearer ${this.scalexPrivateKey}`);
+
+    console.log({ req });
+    const raw = JSON.stringify(req);
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirct: 'follow',
+    };
+
+    const res = await fetch(
+      `${ScalexServices.BASE_URL}/business/tx/onramp`,
+      requestOptions,
+    );
+
+    const jsonData: ScalexResDto<ScalexOnRampResDto> = await res.json();
+    if (!res.ok) throw new ServiceUnavailableException(jsonData.message);
     return jsonData.data;
   }
 }
